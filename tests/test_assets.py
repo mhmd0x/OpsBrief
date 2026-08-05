@@ -69,3 +69,48 @@ def test_get_unknown_asset() -> None:
 
     assert response.status_code == 404
     assert response.json() == {"detail": "Asset not found"}
+
+
+def test_update_existing_asset() -> None:
+    create_response = client.post(
+        "/assets",
+        json={
+            "name": "Boiler Feed Pump",
+            "asset_tag": "PUMP-002",
+            "location": "Boiler House",
+        },
+    )
+
+    created_asset = create_response.json()
+
+    response = client.patch(
+        f"/assets/{created_asset['id']}",
+        json={
+            "location": "Maintenance Workshop",
+        },
+    )
+
+    assert response.status_code == 200
+
+    updated_asset = response.json()
+
+    assert updated_asset["name"] == "Boiler Feed Pump"
+    assert updated_asset["asset_tag"] == "PUMP-002"
+    assert updated_asset["location"] == "Maintenance Workshop"
+    assert updated_asset["id"] == created_asset["id"]
+
+
+def test_update_unknown_asset() -> None:
+    unknown_id = "00000000-0000-0000-0000-000000000000"
+
+    response = client.patch(
+        f"/assets/{unknown_id}",
+        json={
+            "location": "Maintenance Workshop",
+        },
+    )
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Asset not found"}
+
+
