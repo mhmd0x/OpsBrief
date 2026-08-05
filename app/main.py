@@ -69,3 +69,19 @@ def update_asset(asset_id: UUID, asset_data: AssetUpdate) -> Asset:
     )
 
 
+@app.delete(
+    "/assets/{asset_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def delete_asset(asset_id: UUID) -> None:
+    for index, asset in enumerate(assets):
+        if asset.id == asset_id:
+            assets.pop(index)
+            return
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Asset not found",
+    )
+
+

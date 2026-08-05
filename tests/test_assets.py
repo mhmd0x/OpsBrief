@@ -114,3 +114,35 @@ def test_update_unknown_asset() -> None:
     assert response.json() == {"detail": "Asset not found"}
 
 
+def test_delete_existing_asset() -> None:
+    create_response = client.post(
+        "/assets",
+        json={
+            "name": "Exhaust Fan",
+            "asset_tag": "FAN-001",
+            "location": "Production Area",
+        },
+    )
+
+    created_asset = create_response.json()
+    asset_id = created_asset["id"]
+
+    delete_response = client.delete(f"/assets/{asset_id}")
+
+    assert delete_response.status_code == 204
+    assert delete_response.content == b""
+
+    get_response = client.get(f"/assets/{asset_id}")
+
+    assert get_response.status_code == 404
+
+
+def test_delete_unknown_asset() -> None:
+    unknown_id = "00000000-0000-0000-0000-000000000000"
+
+    response = client.delete(f"/assets/{unknown_id}")
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Asset not found"}
+
+
