@@ -13,5 +13,11 @@ dependencies = [
     "uvicorn[standard]",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "httpx",
+    "pytest",
+]
+
 [tool.setuptools.packages.find]
 include = ["app*"]
