@@ -42,3 +42,30 @@ def test_list_assets() -> None:
 
     assert response.status_code == 200
     assert created_asset in response.json()
+
+
+def test_get_existing_asset() -> None:
+    create_response = client.post(
+        "/assets",
+        json={
+            "name": "Emergency Generator",
+            "asset_tag": "GEN-001",
+            "location": "Generator Building",
+        },
+    )
+
+    created_asset = create_response.json()
+
+    response = client.get(f"/assets/{created_asset['id']}")
+
+    assert response.status_code == 200
+    assert response.json() == created_asset
+
+
+def test_get_unknown_asset() -> None:
+    unknown_id = "00000000-0000-0000-0000-000000000000"
+
+    response = client.get(f"/assets/{unknown_id}")
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Asset not found"}

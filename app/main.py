@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
-from uuid import uuid4
+from uuid import UUID, uuid4
 
-from fastapi import FastAPI, status
+from fastapi import FastAPI, HTTPException, status
 
 from app.schemas import Asset, AssetCreate
 
@@ -35,3 +35,15 @@ def create_asset(asset_data: AssetCreate) -> Asset:
 @app.get("/assets", response_model=list[Asset])
 def list_assets() -> list[Asset]:
     return assets
+
+
+@app.get("/assets/{asset_id}", response_model=Asset)
+def get_asset(asset_id: UUID) -> Asset:
+    for asset in assets:
+        if asset.id == asset_id:
+            return asset
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Asset not found",
+    )
