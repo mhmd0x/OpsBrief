@@ -30,3 +30,8 @@ def create_asset(asset_data: AssetCreate) -> Asset:
 
     assets.append(asset)
     return asset
+
+
+@app.get("/assets", response_model=list[Asset])
+def list_assets() -> list[Asset]:
+    return assets
