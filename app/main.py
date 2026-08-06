@@ -4,7 +4,7 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-
+from datetime import UTC, datetime
 from app.database import get_db
 from app.models import AssetModel, WorkOrderModel
 from app.schemas import (
@@ -174,6 +174,27 @@ def list_work_orders(
     statement = select(WorkOrderModel).order_by(
         WorkOrderModel.created_at
     )
+    return list(database.scalars(statement).all())
+
+
+@app.get(
+    "/work-orders/overdue",
+    response_model=list[WorkOrder],
+)
+def list_overdue_work_orders(
+    database: Session = Depends(get_db),
+) -> list[WorkOrderModel]:
+    statement = (
+        select(WorkOrderModel)
+        .where(
+            WorkOrderModel.due_date < datetime.now(UTC),
+            WorkOrderModel.status.notin_(
+                ["completed", "cancelled"]
+            ),
+        )
+        .order_by(WorkOrderModel.due_date)
+    )
+
     return list(database.scalars(statement).all())
 
 

@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-
+from datetime import UTC, datetime, timedelta
 from app.main import app
 
 
@@ -208,5 +208,70 @@ def test_delete_unknown_work_order() -> None:
     assert response.json() == {
         "detail": "Work order not found"
     }
+
+
+def test_list_overdue_work_orders() -> None:
+    asset = create_test_asset()
+
+    overdue_date = (
+        datetime.now(UTC) - timedelta(days=1)
+    ).isoformat()
+    future_date = (
+        datetime.now(UTC) + timedelta(days=1)
+    ).isoformat()
+
+    overdue_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Overdue inspection",
+            "priority": "high",
+            "due_date": overdue_date,
+        },
+    )
+
+    future_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Future inspection",
+            "priority": "medium",
+            "due_date": future_date,
+        },
+    )
+
+    completed_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Completed overdue inspection",
+            "priority": "low",
+            "due_date": overdue_date,
+        },
+    )
+
+    completed_work_order = completed_response.json()
+
+    client.patch(
+        f"/work-orders/{completed_work_order['id']}",
+        json={"status": "completed"},
+    )
+
+    assert overdue_response.status_code == 201
+    assert future_response.status_code == 201
+    assert completed_response.status_code == 201
+
+    response = client.get("/work-orders/overdue")
+
+    assert response.status_code == 200
+
+    work_orders = response.json()
+    returned_ids = {
+        work_order["id"] for work_order in work_orders
+    }
+
+    assert overdue_response.json()["id"] in returned_ids
+    assert future_response.json()["id"] not in returned_ids
+    assert completed_response.json()["id"] not in returned_ids
 
 
