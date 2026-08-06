@@ -1,0 +1,86 @@
+from fastapi.testclient import TestClient
+
+from app.main import app
+
+
+client = TestClient(app)
+
+
+def create_test_asset() -> dict:
+    response = client.post(
+        "/assets",
+        json={
+            "name": "Test Compressor",
+            "asset_tag": "TEST-COMP-001",
+            "location": "Utilities Area",
+        },
+    )
+
+    assert response.status_code == 201
+    return response.json()
+
+
+def test_create_work_order() -> None:
+    asset = create_test_asset()
+
+    response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Inspect compressor vibration",
+            "description": "Investigate increased vibration.",
+            "priority": "high",
+            "due_date": "2026-08-10T08:00:00Z",
+        },
+    )
+
+    assert response.status_code == 201
+
+    work_order = response.json()
+
+    assert work_order["asset_id"] == asset["id"]
+    assert work_order["title"] == "Inspect compressor vibration"
+    assert work_order["priority"] == "high"
+    assert work_order["status"] == "open"
+    assert "id" in work_order
+    assert "created_at" in work_order
+    assert "updated_at" in work_order
+
+
+def test_create_work_order_for_unknown_asset() -> None:
+    unknown_asset_id = "00000000-0000-0000-0000-000000000000"
+
+    response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": unknown_asset_id,
+            "title": "Inspect unknown asset",
+            "priority": "medium",
+            "due_date": "2026-08-10T08:00:00Z",
+        },
+    )
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Asset not found"}
+
+
+def test_list_work_orders() -> None:
+    asset = create_test_asset()
+
+    create_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Replace compressor filter",
+            "priority": "medium",
+            "due_date": "2026-08-12T08:00:00Z",
+        },
+    )
+
+    assert create_response.status_code == 201
+    created_work_order = create_response.json()
+
+    response = client.get("/work-orders")
+
+    assert response.status_code == 200
+    assert created_work_order in response.json()

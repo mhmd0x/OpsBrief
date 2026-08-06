@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
-from sqlalchemy import DateTime, String, Uuid
+from sqlalchemy import DateTime, ForeignKey, String, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
@@ -31,5 +31,54 @@ class AssetModel(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(UTC),
+        nullable=False,
+    )
+
+
+class WorkOrderModel(Base):
+    __tablename__ = "work_orders"
+
+    id: Mapped[UUID] = mapped_column(
+        Uuid,
+        primary_key=True,
+        default=uuid4,
+    )
+    asset_id: Mapped[UUID] = mapped_column(
+        Uuid,
+        ForeignKey("assets.id"),
+        nullable=False,
+        index=True,
+    )
+    title: Mapped[str] = mapped_column(
+        String(200),
+        nullable=False,
+    )
+    description: Mapped[str | None] = mapped_column(
+        String(1000),
+        nullable=True,
+    )
+    priority: Mapped[str] = mapped_column(
+        String(20),
+        default="medium",
+        nullable=False,
+    )
+    status: Mapped[str] = mapped_column(
+        String(20),
+        default="open",
+        nullable=False,
+    )
+    due_date: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        nullable=False,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
         nullable=False,
     )

@@ -6,8 +6,14 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import AssetModel
-from app.schemas import Asset, AssetCreate, AssetUpdate
+from app.models import AssetModel, WorkOrderModel
+from app.schemas import (
+    Asset,
+    AssetCreate,
+    AssetUpdate,
+    WorkOrder,
+    WorkOrderCreate,
+)
 
 
 app = FastAPI(
@@ -117,3 +123,39 @@ def delete_asset(
 
     database.delete(asset)
     database.commit()
+
+
+@app.post(
+    "/work-orders",
+    response_model=WorkOrder,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_work_order(
+    work_order_data: WorkOrderCreate,
+    database: Session = Depends(get_db),
+) -> WorkOrderModel:
+    asset = database.get(AssetModel, work_order_data.asset_id)
+
+    if asset is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Asset not found",
+        )
+
+    work_order = WorkOrderModel(**work_order_data.model_dump())
+
+    database.add(work_order)
+    database.commit()
+    database.refresh(work_order)
+
+    return work_order
+
+
+@app.get("/work-orders", response_model=list[WorkOrder])
+def list_work_orders(
+    database: Session = Depends(get_db),
+) -> list[WorkOrderModel]:
+    statement = select(WorkOrderModel).order_by(
+        WorkOrderModel.created_at
+    )
+    return list(database.scalars(statement).all())
