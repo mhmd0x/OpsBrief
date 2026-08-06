@@ -76,3 +76,11 @@ class WorkOrder(BaseModel):
     created_at: datetime
     updated_at: datetime
     failure_code: str | None
+
+
+class RecurringIssueSignal(BaseModel):
+    asset_id: UUID
+    asset_name: str
+    failure_code: str
+    occurrence_count: int
+    latest_occurrence: datetime

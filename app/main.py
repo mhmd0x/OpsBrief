@@ -3,7 +3,7 @@ import os
 from zoneinfo import ZoneInfo
 from datetime import UTC, datetime, timedelta
 from fastapi import Depends, FastAPI, HTTPException, status
-from sqlalchemy import or_, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -16,6 +16,7 @@ from app.schemas import (
     WorkOrder,
     WorkOrderCreate,
     WorkOrderUpdate,
+    RecurringIssueSignal,
 )
 
 
@@ -328,3 +329,46 @@ def delete_work_order(
 
     database.delete(work_order)
     database.commit()
+
+
+@app.get(
+    "/insights/recurring-issues",
+    response_model=list[RecurringIssueSignal],
+)
+def list_recurring_issues(
+    database: Session = Depends(get_db),
+) -> list[RecurringIssueSignal]:
+    cutoff_date = datetime.now(UTC) - timedelta(days=90)
+    occurrence_count = func.count(WorkOrderModel.id)
+
+    statement = (
+        select(
+            AssetModel.id.label("asset_id"),
+            AssetModel.name.label("asset_name"),
+            WorkOrderModel.failure_code.label(
+                "failure_code"
+            ),
+            occurrence_count.label("occurrence_count"),
+            func.max(WorkOrderModel.created_at).label(
+                "latest_occurrence"
+            ),
+        )
+        .join(
+            WorkOrderModel,
+            WorkOrderModel.asset_id == AssetModel.id,
+        )
+        .where(
+            WorkOrderModel.failure_code.is_not(None),
+            WorkOrderModel.created_at >= cutoff_date,
+        )
+        .group_by(
+            AssetModel.id,
+            AssetModel.name,
+            WorkOrderModel.failure_code,
+        )
+        .having(occurrence_count >= 3)
+        .order_by(occurrence_count.desc())
+    )
+
+    results = database.execute(statement).mappings().all()
+    return [RecurringIssueSignal(**result) for result in results]

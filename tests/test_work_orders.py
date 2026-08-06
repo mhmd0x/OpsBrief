@@ -426,3 +426,37 @@ def test_list_high_attention_work_orders() -> None:
     assert completed_response.json()["id"] not in returned_ids
 
 
+def test_list_recurring_issues() -> None:
+    asset = create_test_asset()
+    due_date = (
+        datetime.now(UTC) + timedelta(days=1)
+    ).isoformat()
+
+    for number in range(3):
+        response = client.post(
+            "/work-orders",
+            json={
+                "asset_id": asset["id"],
+                "title": f"Bearing inspection {number + 1}",
+                "failure_code": "BEARING_VIBRATION",
+                "priority": "medium",
+                "due_date": due_date,
+            },
+        )
+
+        assert response.status_code == 201
+
+    response = client.get("/insights/recurring-issues")
+
+    assert response.status_code == 200
+
+    signals = response.json()
+
+    assert len(signals) == 1
+    assert signals[0]["asset_id"] == asset["id"]
+    assert signals[0]["asset_name"] == "Test Compressor"
+    assert signals[0]["failure_code"] == "BEARING_VIBRATION"
+    assert signals[0]["occurrence_count"] == 3
+    assert "latest_occurrence" in signals[0]
+
+
