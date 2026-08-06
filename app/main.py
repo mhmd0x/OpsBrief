@@ -1,10 +1,12 @@
 from uuid import UUID
-
+import os
+from zoneinfo import ZoneInfo
+from datetime import UTC, datetime, timedelta
 from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from datetime import UTC, datetime
+
 from app.database import get_db
 from app.models import AssetModel, WorkOrderModel
 from app.schemas import (
@@ -14,6 +16,11 @@ from app.schemas import (
     WorkOrder,
     WorkOrderCreate,
     WorkOrderUpdate,
+)
+
+
+APP_TIMEZONE = ZoneInfo(
+    os.getenv("APP_TIMEZONE", "Asia/Riyadh")
 )
 
 
@@ -188,6 +195,40 @@ def list_overdue_work_orders(
         select(WorkOrderModel)
         .where(
             WorkOrderModel.due_date < datetime.now(UTC),
+            WorkOrderModel.status.notin_(
+                ["completed", "cancelled"]
+            ),
+        )
+        .order_by(WorkOrderModel.due_date)
+    )
+
+    return list(database.scalars(statement).all())
+
+
+@app.get(
+    "/work-orders/due-today",
+    response_model=list[WorkOrder],
+)
+def list_due_today_work_orders(
+    database: Session = Depends(get_db),
+) -> list[WorkOrderModel]:
+    local_now = datetime.now(APP_TIMEZONE)
+    local_day_start = local_now.replace(
+        hour=0,
+        minute=0,
+        second=0,
+        microsecond=0,
+    )
+    local_next_day = local_day_start + timedelta(days=1)
+
+    utc_day_start = local_day_start.astimezone(UTC)
+    utc_next_day = local_next_day.astimezone(UTC)
+
+    statement = (
+        select(WorkOrderModel)
+        .where(
+            WorkOrderModel.due_date >= utc_day_start,
+            WorkOrderModel.due_date < utc_next_day,
             WorkOrderModel.status.notin_(
                 ["completed", "cancelled"]
             ),

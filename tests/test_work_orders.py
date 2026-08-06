@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 from datetime import UTC, datetime, timedelta
-from app.main import app
+from app.main import APP_TIMEZONE, app
 
 
 client = TestClient(app)
@@ -273,5 +273,48 @@ def test_list_overdue_work_orders() -> None:
     assert overdue_response.json()["id"] in returned_ids
     assert future_response.json()["id"] not in returned_ids
     assert completed_response.json()["id"] not in returned_ids
+
+
+def test_list_due_today_work_orders() -> None:
+    asset = create_test_asset()
+
+    due_today = datetime.now(APP_TIMEZONE).replace(
+        hour=12,
+        minute=0,
+        second=0,
+        microsecond=0,
+    )
+    due_tomorrow = due_today + timedelta(days=1)
+
+    today_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Inspection due today",
+            "priority": "high",
+            "due_date": due_today.isoformat(),
+        },
+    )
+
+    tomorrow_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Inspection due tomorrow",
+            "priority": "medium",
+            "due_date": due_tomorrow.isoformat(),
+        },
+    )
+
+    response = client.get("/work-orders/due-today")
+
+    assert response.status_code == 200
+
+    returned_ids = {
+        work_order["id"] for work_order in response.json()
+    }
+
+    assert today_response.json()["id"] in returned_ids
+    assert tomorrow_response.json()["id"] not in returned_ids
 
 
