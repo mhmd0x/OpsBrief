@@ -10,13 +10,19 @@ OpsBrief is being developed to surface what requires attention instead of only d
 
 ## Current Features
 
-- Create, list, retrieve, update, and delete assets
-- Validate incoming asset data
-- Store assets in PostgreSQL
-- Prevent duplicate asset tags
-- Return clear `404 Not Found` and `409 Conflict` responses
-- Manage database changes with Alembic migrations
-- Run automated API tests using an isolated test database
+- Complete asset CRUD API
+- Complete work-order CRUD API
+- PostgreSQL persistence with SQLAlchemy
+- Alembic database migrations
+- Docker Compose development environment
+- Unique asset-tag enforcement
+- Asset-to-work-order data-integrity protection
+- Overdue work-order detection
+- Due-today detection using the Asia/Riyadh timezone
+- High-attention work-order detection
+- Recurring failure detection by asset and failure code
+- Daily Operations Brief API
+- Isolated automated database tests
 
 ## API Endpoints
 
@@ -24,10 +30,20 @@ OpsBrief is being developed to surface what requires attention instead of only d
 |---|---|---|
 | `GET` | `/health` | Check API health |
 | `POST` | `/assets` | Create an asset |
-| `GET` | `/assets` | List all assets |
+| `GET` | `/assets` | List assets |
 | `GET` | `/assets/{asset_id}` | Retrieve an asset |
 | `PATCH` | `/assets/{asset_id}` | Update an asset |
 | `DELETE` | `/assets/{asset_id}` | Delete an asset |
+| `POST` | `/work-orders` | Create a work order |
+| `GET` | `/work-orders` | List work orders |
+| `GET` | `/work-orders/overdue` | List overdue work orders |
+| `GET` | `/work-orders/due-today` | List work orders due today |
+| `GET` | `/work-orders/high-attention` | List high-attention work orders |
+| `GET` | `/work-orders/{work_order_id}` | Retrieve a work order |
+| `PATCH` | `/work-orders/{work_order_id}` | Update a work order |
+| `DELETE` | `/work-orders/{work_order_id}` | Delete a work order |
+| `GET` | `/insights/recurring-issues` | Detect recurring asset failures |
+| `GET` | `/briefs/daily` | Generate the Daily Operations Brief |
 
 Interactive API documentation is available at `/docs` while the application is running.
 
@@ -172,11 +188,11 @@ OpsBrief/
 
 The next milestones are:
 
-- Work-order management
-- Overdue and due-today work-order detection
-- High-attention work-order identification
-- Recurring asset issue detection
-- Daily Operations Brief API
+- Continuous integration with GitHub Actions
+- Work-order filtering and pagination
+- Stronger status-transition validation
+- Additional Daily Operations Brief signals
+- Production deployment configuration
 
 ## Status
 
