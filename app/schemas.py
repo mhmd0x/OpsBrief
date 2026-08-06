@@ -43,6 +43,11 @@ class WorkOrderCreate(BaseModel):
     description: str | None = Field(default=None, max_length=1000)
     priority: WorkOrderPriority = WorkOrderPriority.MEDIUM
     due_date: datetime
+    failure_code: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=50,
+)
 
 
 class WorkOrderUpdate(BaseModel):
@@ -51,6 +56,11 @@ class WorkOrderUpdate(BaseModel):
     priority: WorkOrderPriority | None = None
     status: WorkOrderStatus | None = None
     due_date: datetime | None = None
+    failure_code: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=50,
+)
 
 
 class WorkOrder(BaseModel):
@@ -65,3 +75,4 @@ class WorkOrder(BaseModel):
     due_date: datetime
     created_at: datetime
     updated_at: datetime
+    failure_code: str | None

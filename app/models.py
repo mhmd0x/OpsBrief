@@ -82,3 +82,8 @@ class WorkOrderModel(Base):
         onupdate=lambda: datetime.now(UTC),
         nullable=False,
     )
+    failure_code: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True,
+        index=True,
+    )
