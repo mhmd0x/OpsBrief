@@ -146,3 +146,60 @@ def test_delete_unknown_asset() -> None:
     assert response.json() == {"detail": "Asset not found"}
 
 
+def test_create_asset_with_duplicate_tag() -> None:
+    asset_data = {
+        "name": "Primary Compressor",
+        "asset_tag": "COMP-200",
+        "location": "Utilities Area",
+    }
+
+    first_response = client.post("/assets", json=asset_data)
+    second_response = client.post(
+        "/assets",
+        json={
+            "name": "Backup Compressor",
+            "asset_tag": "COMP-200",
+            "location": "Workshop",
+        },
+    )
+
+    assert first_response.status_code == 201
+    assert second_response.status_code == 409
+    assert second_response.json() == {
+        "detail": "Asset tag already exists"
+    }
+
+
+def test_update_asset_with_duplicate_tag() -> None:
+    first_response = client.post(
+        "/assets",
+        json={
+            "name": "Primary Pump",
+            "asset_tag": "PUMP-100",
+            "location": "Pump Room",
+        },
+    )
+
+    second_response = client.post(
+        "/assets",
+        json={
+            "name": "Standby Pump",
+            "asset_tag": "PUMP-200",
+            "location": "Pump Room",
+        },
+    )
+
+    second_asset = second_response.json()
+
+    update_response = client.patch(
+        f"/assets/{second_asset['id']}",
+        json={"asset_tag": "PUMP-100"},
+    )
+
+    assert first_response.status_code == 201
+    assert second_response.status_code == 201
+    assert update_response.status_code == 409
+    assert update_response.json() == {
+        "detail": "Asset tag already exists"
+    }
+
