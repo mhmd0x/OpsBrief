@@ -169,3 +169,44 @@ def test_update_unknown_work_order() -> None:
     }
 
 
+def test_delete_existing_work_order() -> None:
+    asset = create_test_asset()
+
+    create_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Clean ventilation filter",
+            "priority": "low",
+            "due_date": "2026-08-20T08:00:00Z",
+        },
+    )
+
+    created_work_order = create_response.json()
+    work_order_id = created_work_order["id"]
+
+    delete_response = client.delete(
+        f"/work-orders/{work_order_id}"
+    )
+
+    assert delete_response.status_code == 204
+    assert delete_response.content == b""
+
+    get_response = client.get(
+        f"/work-orders/{work_order_id}"
+    )
+
+    assert get_response.status_code == 404
+
+
+def test_delete_unknown_work_order() -> None:
+    unknown_id = "00000000-0000-0000-0000-000000000000"
+
+    response = client.delete(f"/work-orders/{unknown_id}")
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Work order not found"
+    }
+
+

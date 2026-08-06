@@ -211,3 +211,17 @@ def update_work_order(
     database.refresh(work_order)
 
     return work_order
+
+
+@app.delete(
+    "/work-orders/{work_order_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def delete_work_order(
+    work_order_id: UUID,
+    database: Session = Depends(get_db),
+) -> None:
+    work_order = find_work_order(work_order_id, database)
+
+    database.delete(work_order)
+    database.commit()
