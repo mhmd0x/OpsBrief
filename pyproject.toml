@@ -10,9 +10,11 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "fastapi",
+    "uvicorn[standard]",
     "sqlalchemy",
     "alembic",
-    "uvicorn[standard]",
+    "psycopg[binary]",
+    "python-dotenv",
 ]
 
 [project.optional-dependencies]
