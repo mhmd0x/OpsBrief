@@ -144,6 +144,18 @@ def delete_asset(
 ) -> None:
     asset = find_asset(asset_id, database)
 
+    work_order_id = database.scalar(
+        select(WorkOrderModel.id)
+        .where(WorkOrderModel.asset_id == asset_id)
+        .limit(1)
+    )
+
+    if work_order_id is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Asset has work orders and cannot be deleted",
+        )
+
     database.delete(asset)
     database.commit()
 
