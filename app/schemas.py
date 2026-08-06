@@ -84,3 +84,22 @@ class RecurringIssueSignal(BaseModel):
     failure_code: str
     occurrence_count: int
     latest_occurrence: datetime
+
+
+class DailyBriefSummary(BaseModel):
+    overdue_count: int
+    due_today_count: int
+    high_attention_count: int
+    recurring_issue_count: int
+
+
+class DailyOperationsBrief(BaseModel):
+    generated_at: datetime
+    timezone: str
+    summary: DailyBriefSummary
+    overdue_work_orders: list[WorkOrder]
+    due_today_work_orders: list[WorkOrder]
+    high_attention_work_orders: list[WorkOrder]
+    recurring_issues: list[RecurringIssueSignal]
+
+

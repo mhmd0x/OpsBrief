@@ -460,3 +460,77 @@ def test_list_recurring_issues() -> None:
     assert "latest_occurrence" in signals[0]
 
 
+def test_get_daily_operations_brief() -> None:
+    asset = create_test_asset()
+
+    overdue_date = (
+        datetime.now(UTC) - timedelta(days=1)
+    ).isoformat()
+
+    local_now = datetime.now(APP_TIMEZONE)
+    due_today = local_now.replace(
+        hour=23,
+        minute=59,
+        second=0,
+        microsecond=0,
+    ).isoformat()
+
+    future_date = (
+        datetime.now(UTC) + timedelta(days=7)
+    ).isoformat()
+
+    overdue_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Overdue lubrication",
+            "priority": "low",
+            "due_date": overdue_date,
+        },
+    )
+
+    today_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Inspection due today",
+            "priority": "medium",
+            "due_date": due_today,
+        },
+    )
+
+    for number in range(3):
+        recurring_response = client.post(
+            "/work-orders",
+            json={
+                "asset_id": asset["id"],
+                "title": f"Seal leak occurrence {number + 1}",
+                "failure_code": "SEAL_LEAK",
+                "priority": "medium",
+                "due_date": future_date,
+            },
+        )
+
+        assert recurring_response.status_code == 201
+
+    assert overdue_response.status_code == 201
+    assert today_response.status_code == 201
+
+    response = client.get("/briefs/daily")
+
+    assert response.status_code == 200
+
+    brief = response.json()
+
+    assert brief["timezone"] == str(APP_TIMEZONE)
+    assert brief["summary"] == {
+        "overdue_count": 1,
+        "due_today_count": 1,
+        "high_attention_count": 1,
+        "recurring_issue_count": 1,
+    }
+    assert len(brief["overdue_work_orders"]) == 1
+    assert len(brief["due_today_work_orders"]) == 1
+    assert len(brief["high_attention_work_orders"]) == 1
+    assert len(brief["recurring_issues"]) == 1
+    assert "generated_at" in brief

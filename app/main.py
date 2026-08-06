@@ -17,6 +17,8 @@ from app.schemas import (
     WorkOrderCreate,
     WorkOrderUpdate,
     RecurringIssueSignal,
+    DailyBriefSummary,
+    DailyOperationsBrief,
 )
 
 
@@ -178,7 +180,12 @@ def create_work_order(
             detail="Asset not found",
         )
 
-    work_order = WorkOrderModel(**work_order_data.model_dump())
+    work_order_fields = work_order_data.model_dump()
+    work_order_fields["due_date"] = (
+        work_order_data.due_date.astimezone(UTC)
+    )
+
+    work_order = WorkOrderModel(**work_order_fields)
 
     database.add(work_order)
     database.commit()
@@ -372,3 +379,33 @@ def list_recurring_issues(
 
     results = database.execute(statement).mappings().all()
     return [RecurringIssueSignal(**result) for result in results]
+
+
+@app.get(
+    "/briefs/daily",
+    response_model=DailyOperationsBrief,
+)
+def get_daily_operations_brief(
+    database: Session = Depends(get_db),
+) -> DailyOperationsBrief:
+    overdue = list_overdue_work_orders(database)
+    due_today = list_due_today_work_orders(database)
+    high_attention = list_high_attention_work_orders(
+        database
+    )
+    recurring_issues = list_recurring_issues(database)
+
+    return DailyOperationsBrief(
+        generated_at=datetime.now(UTC),
+        timezone=str(APP_TIMEZONE),
+        summary=DailyBriefSummary(
+            overdue_count=len(overdue),
+            due_today_count=len(due_today),
+            high_attention_count=len(high_attention),
+            recurring_issue_count=len(recurring_issues),
+        ),
+        overdue_work_orders=overdue,
+        due_today_work_orders=due_today,
+        high_attention_work_orders=high_attention,
+        recurring_issues=recurring_issues,
+    )
