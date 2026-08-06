@@ -118,3 +118,54 @@ def test_get_unknown_work_order() -> None:
     assert response.json() == {
         "detail": "Work order not found"
     }
+
+
+def test_update_existing_work_order() -> None:
+    asset = create_test_asset()
+
+    create_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Inspect pump seal",
+            "priority": "medium",
+            "due_date": "2026-08-18T08:00:00Z",
+        },
+    )
+
+    created_work_order = create_response.json()
+
+    response = client.patch(
+        f"/work-orders/{created_work_order['id']}",
+        json={
+            "priority": "critical",
+            "status": "in_progress",
+        },
+    )
+
+    assert response.status_code == 200
+
+    updated_work_order = response.json()
+
+    assert updated_work_order["title"] == "Inspect pump seal"
+    assert updated_work_order["priority"] == "critical"
+    assert updated_work_order["status"] == "in_progress"
+    assert updated_work_order["id"] == created_work_order["id"]
+
+
+def test_update_unknown_work_order() -> None:
+    unknown_id = "00000000-0000-0000-0000-000000000000"
+
+    response = client.patch(
+        f"/work-orders/{unknown_id}",
+        json={
+            "status": "completed",
+        },
+    )
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Work order not found"
+    }
+
+

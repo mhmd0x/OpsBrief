@@ -13,6 +13,7 @@ from app.schemas import (
     AssetUpdate,
     WorkOrder,
     WorkOrderCreate,
+    WorkOrderUpdate,
 )
 
 
@@ -185,3 +186,28 @@ def get_work_order(
     database: Session = Depends(get_db),
 ) -> WorkOrderModel:
     return find_work_order(work_order_id, database)
+
+
+@app.patch(
+    "/work-orders/{work_order_id}",
+    response_model=WorkOrder,
+)
+def update_work_order(
+    work_order_id: UUID,
+    work_order_data: WorkOrderUpdate,
+    database: Session = Depends(get_db),
+) -> WorkOrderModel:
+    work_order = find_work_order(work_order_id, database)
+
+    update_fields = work_order_data.model_dump(
+        exclude_unset=True,
+        exclude_none=True,
+    )
+
+    for field, value in update_fields.items():
+        setattr(work_order, field, value)
+
+    database.commit()
+    database.refresh(work_order)
+
+    return work_order
