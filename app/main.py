@@ -3,7 +3,7 @@ import os
 from zoneinfo import ZoneInfo
 from datetime import UTC, datetime, timedelta
 from fastapi import Depends, FastAPI, HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -246,6 +246,35 @@ def list_due_today_work_orders(
             ),
         )
         .order_by(WorkOrderModel.due_date)
+    )
+
+    return list(database.scalars(statement).all())
+
+
+@app.get(
+    "/work-orders/high-attention",
+    response_model=list[WorkOrder],
+)
+def list_high_attention_work_orders(
+    database: Session = Depends(get_db),
+) -> list[WorkOrderModel]:
+    statement = (
+        select(WorkOrderModel)
+        .where(
+            WorkOrderModel.status.notin_(
+                ["completed", "cancelled"]
+            ),
+            or_(
+                WorkOrderModel.priority.in_(
+                    ["high", "critical"]
+                ),
+                WorkOrderModel.due_date < datetime.now(UTC),
+            ),
+        )
+        .order_by(
+            WorkOrderModel.priority.desc(),
+            WorkOrderModel.due_date,
+        )
     )
 
     return list(database.scalars(statement).all())

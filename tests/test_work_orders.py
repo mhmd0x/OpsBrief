@@ -318,3 +318,111 @@ def test_list_due_today_work_orders() -> None:
     assert tomorrow_response.json()["id"] not in returned_ids
 
 
+def test_delete_asset_with_work_orders() -> None:
+    asset_response = client.post(
+        "/assets",
+        json={
+            "name": "Process Pump",
+            "asset_tag": "PUMP-WO-001",
+            "location": "Production Area",
+        },
+    )
+
+    asset = asset_response.json()
+
+    work_order_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Inspect mechanical seal",
+            "priority": "high",
+            "due_date": "2026-08-20T08:00:00Z",
+        },
+    )
+
+    assert work_order_response.status_code == 201
+
+    delete_response = client.delete(
+        f"/assets/{asset['id']}"
+    )
+
+    assert delete_response.status_code == 409
+    assert delete_response.json() == {
+        "detail": "Asset has work orders and cannot be deleted"
+    }
+
+    get_response = client.get(f"/assets/{asset['id']}")
+    assert get_response.status_code == 200
+
+
+def test_list_high_attention_work_orders() -> None:
+    asset = create_test_asset()
+
+    past_date = (
+        datetime.now(UTC) - timedelta(days=1)
+    ).isoformat()
+    future_date = (
+        datetime.now(UTC) + timedelta(days=7)
+    ).isoformat()
+
+    critical_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Critical future repair",
+            "priority": "critical",
+            "due_date": future_date,
+        },
+    )
+
+    overdue_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Low-priority overdue task",
+            "priority": "low",
+            "due_date": past_date,
+        },
+    )
+
+    normal_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Normal future task",
+            "priority": "medium",
+            "due_date": future_date,
+        },
+    )
+
+    completed_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Completed critical task",
+            "priority": "critical",
+            "due_date": future_date,
+        },
+    )
+
+    completed_work_order = completed_response.json()
+
+    client.patch(
+        f"/work-orders/{completed_work_order['id']}",
+        json={"status": "completed"},
+    )
+
+    response = client.get("/work-orders/high-attention")
+
+    assert response.status_code == 200
+
+    returned_ids = {
+        work_order["id"] for work_order in response.json()
+    }
+
+    assert critical_response.json()["id"] in returned_ids
+    assert overdue_response.json()["id"] in returned_ids
+    assert normal_response.json()["id"] not in returned_ids
+    assert completed_response.json()["id"] not in returned_ids
+
+
