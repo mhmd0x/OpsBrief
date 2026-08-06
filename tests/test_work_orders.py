@@ -84,3 +84,37 @@ def test_list_work_orders() -> None:
 
     assert response.status_code == 200
     assert created_work_order in response.json()
+
+
+def test_get_existing_work_order() -> None:
+    asset = create_test_asset()
+
+    create_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Inspect motor bearings",
+            "priority": "high",
+            "due_date": "2026-08-15T08:00:00Z",
+        },
+    )
+
+    created_work_order = create_response.json()
+
+    response = client.get(
+        f"/work-orders/{created_work_order['id']}"
+    )
+
+    assert response.status_code == 200
+    assert response.json() == created_work_order
+
+
+def test_get_unknown_work_order() -> None:
+    unknown_id = "00000000-0000-0000-0000-000000000000"
+
+    response = client.get(f"/work-orders/{unknown_id}")
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Work order not found"
+    }

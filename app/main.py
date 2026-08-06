@@ -35,6 +35,21 @@ def find_asset(asset_id: UUID, database: Session) -> AssetModel:
     return asset
 
 
+def find_work_order(
+    work_order_id: UUID,
+    database: Session,
+) -> WorkOrderModel:
+    work_order = database.get(WorkOrderModel, work_order_id)
+
+    if work_order is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Work order not found",
+        )
+
+    return work_order
+
+
 @app.get("/health")
 def health_check() -> dict[str, str]:
     return {"status": "healthy"}
@@ -159,3 +174,14 @@ def list_work_orders(
         WorkOrderModel.created_at
     )
     return list(database.scalars(statement).all())
+
+
+@app.get(
+    "/work-orders/{work_order_id}",
+    response_model=WorkOrder,
+)
+def get_work_order(
+    work_order_id: UUID,
+    database: Session = Depends(get_db),
+) -> WorkOrderModel:
+    return find_work_order(work_order_id, database)
