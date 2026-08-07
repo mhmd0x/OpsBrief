@@ -26,6 +26,7 @@ OpsBrief is being developed to surface what requires attention instead of only d
 - Daily Operations Brief API
 - Isolated automated database tests
 - API-key protection for create, update, and delete operations
+- Reusable realistic maintenance demo-data seeder
 
 ## API Endpoints
 
@@ -197,6 +198,14 @@ Apply the database migrations:
 python -m alembic upgrade head
 ```
 
+Load optional realistic maintenance demo data:
+
+```bash
+python -m app.seed
+```
+
+The seeder only adds records when the database contains no work orders, preventing accidental duplicate demo data.
+
 Start the API:
 
 ```bash
@@ -251,7 +260,8 @@ OpsBrief/
 │   ├── main.py
 │   ├── models.py
 │   ├── schemas.py
-│   └── security.py
+│   ├── security.py
+│   └── seed.py
 ├── tests/
 │   ├── conftest.py
 │   ├── test_assets.py
@@ -273,7 +283,6 @@ OpsBrief/
 
 The next milestones are:
 
-- Realistic maintenance demo data
 - Daily Operations Brief dashboard
 - Additional operational risk signals
 - Role-based user authentication
