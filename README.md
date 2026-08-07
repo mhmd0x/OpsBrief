@@ -66,6 +66,40 @@ Interactive API documentation is available at `/docs` while the application is r
 - Docker with Docker Compose
 - Git
 
+## Running the Full Stack with Docker
+
+Create the local environment file:
+
+```bash
+cp .env.example .env
+```
+
+Build and start the API and PostgreSQL:
+
+```bash
+docker compose up --build -d
+```
+
+Check both services:
+
+```bash
+docker compose ps
+```
+
+Both the `api` and `database` services should report `healthy`.
+
+Open the API documentation at:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+Stop the services without deleting database data:
+
+```bash
+docker compose down
+```
+
 ## Development Setup
 
 Clone the repository and enter its directory:
@@ -114,7 +148,7 @@ Copy-Item .env.example .env
 Start PostgreSQL:
 
 ```bash
-docker compose up -d
+docker compose up -d database
 ```
 
 Confirm the database is healthy:
@@ -165,6 +199,9 @@ Avoid using `docker compose down -v` unless you intentionally want to delete the
 
 ```text
 OpsBrief/
+├── .github/
+│   └── workflows/
+│       └── tests.yml
 ├── alembic/
 │   └── versions/
 ├── app/
@@ -176,11 +213,14 @@ OpsBrief/
 ├── tests/
 │   ├── conftest.py
 │   ├── test_assets.py
-│   └── test_health.py
+│   ├── test_health.py
+│   └── test_work_orders.py
+├── .dockerignore
 ├── .env.example
 ├── .gitignore
 ├── alembic.ini
 ├── compose.yaml
+├── Dockerfile
 ├── LICENSE
 ├── pyproject.toml
 └── README.md
