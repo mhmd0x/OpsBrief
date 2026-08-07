@@ -21,7 +21,7 @@ from app.schemas import (
     WorkOrderStatus,
     WorkOrderUpdate,
 )
-
+from app.security import require_api_key
 
 router = APIRouter(
     prefix="/work-orders",
@@ -51,6 +51,7 @@ def find_work_order(
     "",
     response_model=WorkOrder,
     status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(require_api_key)],
 )
 def create_work_order(
     work_order_data: WorkOrderCreate,
@@ -216,6 +217,7 @@ def get_work_order(
 @router.patch(
     "/{work_order_id}",
     response_model=WorkOrder,
+    dependencies=[Depends(require_api_key)],
 )
 def update_work_order(
     work_order_id: UUID,
@@ -271,8 +273,6 @@ def update_work_order(
 
     for field, value in update_fields.items():
         setattr(work_order, field, value)
-
-
     database.commit()
     database.refresh(work_order)
 
@@ -282,6 +282,7 @@ def update_work_order(
 @router.delete(
     "/{work_order_id}",
     status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(require_api_key)],
 )
 def delete_work_order(
     work_order_id: UUID,

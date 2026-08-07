@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import AssetModel, WorkOrderModel
 from app.schemas import Asset, AssetCreate, AssetUpdate
+from app.security import require_api_key
 
 
 router = APIRouter(
@@ -35,6 +36,7 @@ def find_asset(
     "",
     response_model=Asset,
     status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(require_api_key)],
 )
 def create_asset(
     asset_data: AssetCreate,
@@ -75,7 +77,11 @@ def get_asset(
     return find_asset(asset_id, database)
 
 
-@router.patch("/{asset_id}", response_model=Asset)
+@router.patch(
+    "/{asset_id}",
+    response_model=Asset,
+    dependencies=[Depends(require_api_key)],
+)
 def update_asset(
     asset_id: UUID,
     asset_data: AssetUpdate,
@@ -107,6 +113,7 @@ def update_asset(
 @router.delete(
     "/{asset_id}",
     status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(require_api_key)],
 )
 def delete_asset(
     asset_id: UUID,
