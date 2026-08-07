@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 from datetime import UTC, datetime, timedelta
-from app.main import APP_TIMEZONE, app
+from app.config import APP_TIMEZONE
+from app.main import app
 
 
 client = TestClient(app)
