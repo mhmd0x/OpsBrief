@@ -1,5 +1,7 @@
 # OpsBrief
 
+[![Tests](https://github.com/mhmmd0x/OpsBrief/actions/workflows/tests.yml/badge.svg)](https://github.com/mhmmd0x/OpsBrief/actions/workflows/tests.yml)
+
 OpsBrief is a maintenance decision-support API that turns asset and work-order data into operational briefs, risk signals, and recurring-issue insights.
 
 ## Problem
