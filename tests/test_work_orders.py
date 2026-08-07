@@ -614,3 +614,41 @@ def test_paginate_work_orders() -> None:
     assert returned_ids == created_ids[1:]
 
 
+def test_reject_invalid_status_transition() -> None:
+    asset = create_test_asset()
+
+    create_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Completed inspection",
+            "priority": "medium",
+            "due_date": (
+                datetime.now(UTC) + timedelta(days=1)
+            ).isoformat(),
+        },
+    )
+
+    work_order = create_response.json()
+
+    complete_response = client.patch(
+        f"/work-orders/{work_order['id']}",
+        json={"status": "completed"},
+    )
+
+    assert complete_response.status_code == 200
+
+    reopen_response = client.patch(
+        f"/work-orders/{work_order['id']}",
+        json={"status": "open"},
+    )
+
+    assert reopen_response.status_code == 409
+    assert reopen_response.json() == {
+        "detail": (
+            "Cannot transition work order "
+            "from completed to open"
+        )
+    }
+
+

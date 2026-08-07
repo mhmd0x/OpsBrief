@@ -347,6 +347,54 @@ def update_work_order(
         exclude_none=True,
     )
 
+    update_fields = work_order_data.model_dump(
+        exclude_unset=True,
+        exclude_none=True,
+    )
+
+    if "due_date" in update_fields:
+        update_fields["due_date"] = update_fields[
+            "due_date"
+        ].astimezone(UTC)
+
+    new_status = update_fields.get("status")
+
+    if new_status is not None:
+        new_status_value = new_status.value
+
+        allowed_transitions = {
+            "open": {
+                "in_progress",
+                "completed",
+                "cancelled",
+            },
+            "in_progress": {
+                "completed",
+                "cancelled",
+            },
+            "completed": set(),
+            "cancelled": set(),
+        }
+
+        if (
+            new_status_value != work_order.status
+            and new_status_value
+            not in allowed_transitions[work_order.status]
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=(
+                    "Cannot transition work order "
+                    f"from {work_order.status} "
+                    f"to {new_status_value}"
+                ),
+            )
+
+        update_fields["status"] = new_status_value
+
+    for field, value in update_fields.items():
+        setattr(work_order, field, value)
+
     for field, value in update_fields.items():
         setattr(work_order, field, value)
 
