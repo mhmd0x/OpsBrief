@@ -25,6 +25,7 @@ OpsBrief is being developed to surface what requires attention instead of only d
 - Recurring failure detection by asset and failure code
 - Daily Operations Brief API
 - Isolated automated database tests
+- API-key protection for create, update, and delete operations
 
 ## API Endpoints
 
@@ -48,6 +49,39 @@ OpsBrief is being developed to surface what requires attention instead of only d
 | `GET` | `/briefs/daily` | Generate the Daily Operations Brief |
 
 Interactive API documentation is available at `/docs` while the application is running.
+
+## API Authorization
+
+Read-only `GET` endpoints are publicly accessible.
+
+Creating, updating, or deleting data requires an API key in the `X-API-Key` request header.
+
+Create a private key in your local `.env` file:
+
+```dotenv
+OPSBRIEF_API_KEY=your-secure-random-value
+```
+
+Generate a suitable key with:
+
+```bash
+python -c "import secrets; print(secrets.token_urlsafe(32))"
+```
+
+When using `/docs`, click **Authorize** and enter the key. Never commit the real key to Git or include it in screenshots.
+
+Example request:
+
+```bash
+curl -X POST http://127.0.0.1:8000/assets \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: your-secure-random-value" \
+  -d '{
+    "name": "Main Air Compressor",
+    "asset_tag": "COMP-001",
+    "location": "Utilities Area"
+  }'
+```
 
 ## Technology
 
@@ -216,11 +250,13 @@ OpsBrief/
 │   ├── database.py
 │   ├── main.py
 │   ├── models.py
-│   └── schemas.py
+│   ├── schemas.py
+│   └── security.py
 ├── tests/
 │   ├── conftest.py
 │   ├── test_assets.py
 │   ├── test_health.py
+│   ├── test_security.py
 │   └── test_work_orders.py
 ├── .dockerignore
 ├── .env.example
@@ -237,11 +273,11 @@ OpsBrief/
 
 The next milestones are:
 
-- Continuous integration with GitHub Actions
-- Work-order filtering and pagination
-- Stronger status-transition validation
-- Additional Daily Operations Brief signals
-- Production deployment configuration
+- Realistic maintenance demo data
+- Daily Operations Brief dashboard
+- Additional operational risk signals
+- Role-based user authentication
+- Production deployment and monitoring
 
 ## Status
 
