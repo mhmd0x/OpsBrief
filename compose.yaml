@@ -17,5 +17,26 @@ services:
       timeout: 5s
       retries: 5
 
+  api:
+    build:
+      context: .
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-opsbrief}:${POSTGRES_PASSWORD:-opsbrief_dev_password}@database:5432/${POSTGRES_DB:-opsbrief}
+      APP_TIMEZONE: ${APP_TIMEZONE:-Asia/Riyadh}
+    ports:
+      - "8000:8000"
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   postgres_data:
