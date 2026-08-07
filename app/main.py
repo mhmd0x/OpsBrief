@@ -2,7 +2,7 @@ from uuid import UUID
 import os
 from zoneinfo import ZoneInfo
 from datetime import UTC, datetime, timedelta
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, Query, status
 from sqlalchemy import func, or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -19,6 +19,8 @@ from app.schemas import (
     RecurringIssueSignal,
     DailyBriefSummary,
     DailyOperationsBrief,
+    WorkOrderPriority,
+    WorkOrderStatus,
 )
 
 
@@ -196,11 +198,41 @@ def create_work_order(
 
 @app.get("/work-orders", response_model=list[WorkOrder])
 def list_work_orders(
+    asset_id: UUID | None = None,
+    work_order_status: WorkOrderStatus | None = Query(
+        default=None,
+        alias="status",
+    ),
+    priority: WorkOrderPriority | None = None,
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
     database: Session = Depends(get_db),
 ) -> list[WorkOrderModel]:
-    statement = select(WorkOrderModel).order_by(
-        WorkOrderModel.created_at
+    statement = select(WorkOrderModel)
+
+    if asset_id is not None:
+        statement = statement.where(
+            WorkOrderModel.asset_id == asset_id
+        )
+
+    if work_order_status is not None:
+        statement = statement.where(
+            WorkOrderModel.status
+            == work_order_status.value
+        )
+
+    if priority is not None:
+        statement = statement.where(
+            WorkOrderModel.priority == priority.value
+        )
+
+    statement = (
+        statement
+        .order_by(WorkOrderModel.created_at)
+        .offset(offset)
+        .limit(limit)
     )
+
     return list(database.scalars(statement).all())
 
 

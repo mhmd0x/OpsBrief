@@ -534,3 +534,83 @@ def test_get_daily_operations_brief() -> None:
     assert len(brief["high_attention_work_orders"]) == 1
     assert len(brief["recurring_issues"]) == 1
     assert "generated_at" in brief
+
+
+def test_filter_work_orders() -> None:
+    asset = create_test_asset()
+    due_date = (
+        datetime.now(UTC) + timedelta(days=7)
+    ).isoformat()
+
+    low_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Low-priority task",
+            "priority": "low",
+            "due_date": due_date,
+        },
+    )
+
+    critical_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Critical task",
+            "priority": "critical",
+            "due_date": due_date,
+        },
+    )
+
+    critical_work_order = critical_response.json()
+
+    update_response = client.patch(
+        f"/work-orders/{critical_work_order['id']}",
+        json={"status": "in_progress"},
+    )
+
+    assert low_response.status_code == 201
+    assert critical_response.status_code == 201
+    assert update_response.status_code == 200
+
+    response = client.get(
+        "/work-orders"
+        "?status=in_progress"
+        "&priority=critical"
+    )
+
+
+def test_paginate_work_orders() -> None:
+    asset = create_test_asset()
+    due_date = (
+        datetime.now(UTC) + timedelta(days=7)
+    ).isoformat()
+    created_ids = []
+
+    for number in range(3):
+        response = client.post(
+            "/work-orders",
+            json={
+                "asset_id": asset["id"],
+                "title": f"Paginated task {number + 1}",
+                "priority": "medium",
+                "due_date": due_date,
+            },
+        )
+
+        assert response.status_code == 201
+        created_ids.append(response.json()["id"])
+
+    response = client.get(
+        "/work-orders?limit=2&offset=1"
+    )
+
+    assert response.status_code == 200
+
+    returned_ids = [
+        work_order["id"] for work_order in response.json()
+    ]
+
+    assert returned_ids == created_ids[1:]
+
+
