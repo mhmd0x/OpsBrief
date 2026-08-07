@@ -205,7 +205,14 @@ OpsBrief/
 ├── alembic/
 │   └── versions/
 ├── app/
+│   ├── routers/
+│   │   ├── __init__.py
+│   │   ├── assets.py
+│   │   ├── briefs.py
+│   │   ├── insights.py
+│   │   └── work_orders.py
 │   ├── __init__.py
+│   ├── config.py
 │   ├── database.py
 │   ├── main.py
 │   ├── models.py
