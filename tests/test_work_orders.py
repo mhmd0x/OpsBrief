@@ -652,3 +652,19 @@ def test_reject_invalid_status_transition() -> None:
     }
 
 
+def test_reject_due_date_without_timezone() -> None:
+    asset = create_test_asset()
+
+    response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Ambiguous inspection time",
+            "priority": "medium",
+            "due_date": "2026-08-20T08:00:00",
+        },
+    )
+
+    assert response.status_code == 422
+
+
