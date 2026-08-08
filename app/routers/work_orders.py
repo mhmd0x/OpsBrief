@@ -204,6 +204,31 @@ def list_high_attention_work_orders(
 
 
 @router.get(
+    "/due-soon",
+    response_model=list[WorkOrder],
+)
+def list_due_soon_work_orders(
+    database: Session = Depends(get_db),
+) -> list[WorkOrderModel]:
+    now = datetime.now(UTC)
+    cutoff = now + timedelta(days=7)
+
+    statement = (
+        select(WorkOrderModel)
+        .where(
+            WorkOrderModel.due_date > now,
+            WorkOrderModel.due_date <= cutoff,
+            WorkOrderModel.status.notin_(
+                ["completed", "cancelled"]
+            ),
+        )
+        .order_by(WorkOrderModel.due_date)
+    )
+
+    return list(database.scalars(statement).all())
+
+
+@router.get(
     "/{work_order_id}",
     response_model=WorkOrder,
 )

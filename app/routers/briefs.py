@@ -7,6 +7,7 @@ from app.config import APP_TIMEZONE
 from app.database import get_db
 from app.routers.insights import list_recurring_issues
 from app.routers.work_orders import (
+    list_due_soon_work_orders,
     list_due_today_work_orders,
     list_high_attention_work_orders,
     list_overdue_work_orders,
@@ -32,6 +33,7 @@ def get_daily_operations_brief(
 ) -> DailyOperationsBrief:
     overdue = list_overdue_work_orders(database)
     due_today = list_due_today_work_orders(database)
+    due_soon = list_due_soon_work_orders(database)
     high_attention = list_high_attention_work_orders(
         database
     )
@@ -43,11 +45,13 @@ def get_daily_operations_brief(
         summary=DailyBriefSummary(
             overdue_count=len(overdue),
             due_today_count=len(due_today),
+            due_soon_count=len(due_soon),
             high_attention_count=len(high_attention),
             recurring_issue_count=len(recurring_issues),
         ),
         overdue_work_orders=overdue,
         due_today_work_orders=due_today,
+        due_soon_work_orders=due_soon,
         high_attention_work_orders=high_attention,
         recurring_issues=recurring_issues,
     )

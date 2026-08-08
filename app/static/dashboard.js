@@ -116,6 +116,44 @@ function renderOverdue(workOrders, timezone) {
     }
 }
 
+function renderDueSoon(workOrders, timezone) {
+    const container = document.querySelector("#due-soon-list");
+    container.replaceChildren();
+
+    if (workOrders.length === 0) {
+        container.append(
+            createEmptyState(
+                "No work orders are due within seven days.",
+            ),
+        );
+        return;
+    }
+
+    for (const workOrder of workOrders) {
+        const item = document.createElement("article");
+        item.className = "item";
+
+        const details = document.createElement("div");
+        const title = document.createElement("h3");
+        const description = document.createElement("p");
+        const dueDate = document.createElement("span");
+
+        title.textContent = workOrder.title;
+        description.textContent =
+            `${workOrder.status.replaceAll("_", " ")} · ` +
+            `${workOrder.priority} priority`;
+        dueDate.className = "item-value";
+        dueDate.textContent = formatDate(
+            workOrder.due_date,
+            timezone,
+        );
+
+        details.append(title, description);
+        item.append(details, dueDate);
+        container.append(item);
+    }
+}
+
 function renderRecurring(issues, timezone) {
     const container = document.querySelector("#recurring-list");
     container.replaceChildren();
@@ -156,6 +194,8 @@ function renderBrief(brief) {
         summary.overdue_count;
     document.querySelector("#due-today-count").textContent =
         summary.due_today_count;
+    document.querySelector("#due-soon-count").textContent =
+        summary.due_soon_count;
     document.querySelector("#high-attention-count").textContent =
         summary.high_attention_count;
     document.querySelector("#recurring-issue-count").textContent =
@@ -169,6 +209,7 @@ function renderBrief(brief) {
         timezone,
     );
     renderOverdue(brief.overdue_work_orders, timezone);
+    renderDueSoon(brief.due_soon_work_orders, timezone);
     renderRecurring(brief.recurring_issues, timezone);
 }
 

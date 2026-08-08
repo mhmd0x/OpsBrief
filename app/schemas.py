@@ -124,6 +124,7 @@ class RecurringIssueSignal(BaseModel):
 class DailyBriefSummary(BaseModel):
     overdue_count: int
     due_today_count: int
+    due_soon_count: int
     high_attention_count: int
     recurring_issue_count: int
 
@@ -134,7 +135,7 @@ class DailyOperationsBrief(BaseModel):
     summary: DailyBriefSummary
     overdue_work_orders: list[WorkOrder]
     due_today_work_orders: list[WorkOrder]
+    due_soon_work_orders: list[WorkOrder]
     high_attention_work_orders: list[WorkOrder]
     recurring_issues: list[RecurringIssueSignal]
-
 

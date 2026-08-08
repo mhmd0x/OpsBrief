@@ -28,6 +28,7 @@ OpsBrief is being developed to surface what requires attention instead of only d
 - API-key protection for create, update, and delete operations
 - Reusable realistic maintenance demo-data seeder
 - Responsive Daily Operations Brief dashboard
+- Seven-day upcoming work-order risk detection
 
 ## API Endpoints
 
@@ -44,6 +45,7 @@ OpsBrief is being developed to surface what requires attention instead of only d
 | `GET` | `/work-orders` | List work orders |
 | `GET` | `/work-orders/overdue` | List overdue work orders |
 | `GET` | `/work-orders/due-today` | List work orders due today |
+| `GET` | `/work-orders/due-soon` | List work orders due within seven days |
 | `GET` | `/work-orders/high-attention` | List high-attention work orders |
 | `GET` | `/work-orders/{work_order_id}` | Retrieve a work order |
 | `PATCH` | `/work-orders/{work_order_id}` | Update a work order |
@@ -284,6 +286,7 @@ OpsBrief/
 │   ├── conftest.py
 │   ├── test_assets.py
 │   ├── test_dashboard.py
+│   ├── test_due_soon.py
 │   ├── test_health.py
 │   ├── test_security.py
 │   └── test_work_orders.py

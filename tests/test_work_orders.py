@@ -527,6 +527,7 @@ def test_get_daily_operations_brief() -> None:
     assert brief["summary"] == {
         "overdue_count": 1,
         "due_today_count": 1,
+        "due_soon_count": 4,
         "high_attention_count": 1,
         "recurring_issue_count": 1,
     }

@@ -12,6 +12,9 @@ def test_dashboard_page() -> None:
     assert response.status_code == 200
     assert "OpsBrief" in response.text
     assert "Daily Operations Brief" in response.text
+    assert "Due soon" in response.text
+    assert "due-soon-count" in response.text
+    assert "due-soon-list" in response.text
 
 
 def test_dashboard_stylesheet() -> None:

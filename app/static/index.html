@@ -51,6 +51,12 @@
                 <span>Work orders requiring attention today</span>
             </article>
 
+            <article class="metric-card metric-card--upcoming">
+                <p>Due soon</p>
+                <strong id="due-soon-count">—</strong>
+                <span>Work orders due within seven days</span>
+            </article>
+
             <article class="metric-card metric-card--attention">
                 <p>High attention</p>
                 <strong id="high-attention-count">—</strong>
@@ -103,6 +109,19 @@
 
                 <div id="overdue-list" class="item-list">
                     <p>Loading overdue work orders…</p>
+                </div>
+            </section>
+
+            <section class="dashboard-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">Schedule outlook</p>
+                        <h2>Due within seven days</h2>
+                    </div>
+                </div>
+
+                <div id="due-soon-list" class="item-list">
+                    <p>Loading upcoming work orders…</p>
                 </div>
             </section>
 
