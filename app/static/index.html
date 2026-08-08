@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+    <meta
+        name="description"
+        content="OpsBrief daily maintenance operations dashboard"
+    >
+    <title>OpsBrief | Daily Operations Brief</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header class="site-header">
+        <div>
+            <p class="eyebrow">Maintenance decision support</p>
+            <h1>OpsBrief</h1>
+            <p class="subtitle">Daily Operations Brief</p>
+        </div>
+
+        <button id="refresh-button" type="button">
+            Refresh brief
+        </button>
+    </header>
+
+    <main>
+        <section class="brief-heading" aria-labelledby="brief-title">
+            <div>
+                <h2 id="brief-title">Today’s operational priorities</h2>
+                <p id="generated-at">Loading the latest brief…</p>
+            </div>
+
+            <p id="status-message" class="status-message" role="status">
+                Connecting to OpsBrief…
+            </p>
+        </section>
+
+        <section class="metric-grid" aria-label="Daily summary">
+            <article class="metric-card metric-card--danger">
+                <p>Overdue</p>
+                <strong id="overdue-count">—</strong>
+                <span>Open work orders past due</span>
+            </article>
+
+            <article class="metric-card metric-card--warning">
+                <p>Due today</p>
+                <strong id="due-today-count">—</strong>
+                <span>Work orders requiring attention today</span>
+            </article>
+
+            <article class="metric-card metric-card--attention">
+                <p>High attention</p>
+                <strong id="high-attention-count">—</strong>
+                <span>Priority or schedule risks requiring attention</span>
+            </article>
+
+            <article class="metric-card metric-card--info">
+                <p>Recurring issues</p>
+                <strong id="recurring-issue-count">—</strong>
+                <span>Repeated asset failure patterns</span>
+            </article>
+        </section>
+
+        <section class="dashboard-panel">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">Immediate action</p>
+                    <h2>High-attention work orders</h2>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Work order</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Due date</th>
+                            <th>Failure code</th>
+                        </tr>
+                    </thead>
+                    <tbody id="high-attention-body">
+                        <tr>
+                            <td colspan="5">Loading work orders…</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="two-column-grid">
+            <section class="dashboard-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">Schedule risk</p>
+                        <h2>Overdue work orders</h2>
+                    </div>
+                </div>
+
+                <div id="overdue-list" class="item-list">
+                    <p>Loading overdue work orders…</p>
+                </div>
+            </section>
+
+            <section class="dashboard-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">Reliability signal</p>
+                        <h2>Recurring issues</h2>
+                    </div>
+                </div>
+
+                <div id="recurring-list" class="item-list">
+                    <p>Loading recurring issues…</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>
+            Source: <code>GET /briefs/daily</code>
+            · Timezone: <span id="timezone">—</span>
+        </p>
+    </footer>
+
+    <script src="/static/dashboard.js" defer></script>
+</body>
+</html>

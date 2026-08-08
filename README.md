@@ -27,11 +27,13 @@ OpsBrief is being developed to surface what requires attention instead of only d
 - Isolated automated database tests
 - API-key protection for create, update, and delete operations
 - Reusable realistic maintenance demo-data seeder
+- Responsive Daily Operations Brief dashboard
 
 ## API Endpoints
 
 | Method | Endpoint | Description |
 |---|---|---|
+| `GET` | `/` | Open the Daily Operations Brief dashboard |
 | `GET` | `/health` | Check API health |
 | `POST` | `/assets` | Create an asset |
 | `GET` | `/assets` | List assets |
@@ -123,6 +125,12 @@ docker compose ps
 
 Both the `api` and `database` services should report `healthy`.
 
+Open the Daily Operations Brief dashboard at:
+
+```text
+http://127.0.0.1:8000/
+```
+
 Open the API documentation at:
 
 ```text
@@ -212,6 +220,12 @@ Start the API:
 python -m uvicorn app.main:app --reload
 ```
 
+Open the Daily Operations Brief dashboard at:
+
+```text
+http://127.0.0.1:8000/
+```
+
 Open the interactive documentation at:
 
 ```text
@@ -254,6 +268,10 @@ OpsBrief/
 │   │   ├── briefs.py
 │   │   ├── insights.py
 │   │   └── work_orders.py
+│   ├── static/
+│   │   ├── dashboard.js
+│   │   ├── index.html
+│   │   └── styles.css
 │   ├── __init__.py
 │   ├── config.py
 │   ├── database.py
@@ -265,6 +283,7 @@ OpsBrief/
 ├── tests/
 │   ├── conftest.py
 │   ├── test_assets.py
+│   ├── test_dashboard.py
 │   ├── test_health.py
 │   ├── test_security.py
 │   └── test_work_orders.py
@@ -283,7 +302,6 @@ OpsBrief/
 
 The next milestones are:
 
-- Daily Operations Brief dashboard
 - Additional operational risk signals
 - Role-based user authentication
 - Production deployment and monitoring
