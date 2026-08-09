@@ -42,6 +42,8 @@ The application converts work-order records into operational signals:
 - High-attention work orders
 - Recurring failures by asset and failure code
 
+![OpsBrief work-order detail dialog](images/opsbrief-work-order-details.png)
+
 These signals are combined into a single Daily Operations Brief that helps a supervisor quickly identify what requires attention.
 
 ## Architecture
@@ -58,6 +60,7 @@ Operational signal logic
 SQLAlchemy
     ↓
 PostgreSQL
+```
 
 ## Testing and Quality
 
@@ -87,3 +90,4 @@ A new developer can start the complete stack with:
 ```bash
 cp .env.example .env
 docker compose up --build -d
+```

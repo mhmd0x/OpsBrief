@@ -2,6 +2,8 @@ const refreshButton = document.querySelector("#refresh-button");
 const statusMessage = document.querySelector("#status-message");
 const searchInput = document.querySelector("#work-order-search");
 const priorityFilter = document.querySelector("#priority-filter");
+const workOrderDialog = document.querySelector("#work-order-dialog");
+const closeDialogButton = document.querySelector("#close-dialog");
 
 let currentHighAttentionWorkOrders = [];
 let currentAssetNames = new Map();
@@ -33,6 +35,32 @@ function createEmptyState(message) {
     return paragraph;
 }
 
+function openWorkOrderDetails(
+    workOrder,
+    timezone,
+    assetNames,
+) {
+    const assetName =
+        assetNames.get(workOrder.asset_id) ?? "Unknown asset";
+
+    document.querySelector("#detail-title").textContent =
+        workOrder.title;
+    document.querySelector("#detail-asset").textContent =
+        assetName;
+    document.querySelector("#detail-priority").textContent =
+        workOrder.priority;
+    document.querySelector("#detail-status").textContent =
+        workOrder.status.replaceAll("_", " ");
+    document.querySelector("#detail-due-date").textContent =
+        formatDate(workOrder.due_date, timezone);
+    document.querySelector("#detail-failure-code").textContent =
+        workOrder.failure_code ?? "Not assigned";
+    document.querySelector("#detail-description").textContent =
+        workOrder.description ?? "No description provided.";
+
+    workOrderDialog.showModal();
+}
+
 function renderHighAttention(workOrders, timezone, assetNames) {
     const tableBody = document.querySelector("#high-attention-body");
     tableBody.replaceChildren();
@@ -57,7 +85,20 @@ function renderHighAttention(workOrders, timezone, assetNames) {
 
 
         const titleCell = document.createElement("td");
-        titleCell.textContent = workOrder.title;
+        const titleButton = document.createElement("button");
+
+        titleButton.type = "button";
+        titleButton.className = "work-order-link";
+        titleButton.textContent = workOrder.title;
+        titleButton.addEventListener("click", () => {
+            openWorkOrderDetails(
+                workOrder,
+                timezone,
+                assetNames,
+            );
+        });
+
+        titleCell.append(titleButton);
 
         const priorityCell = document.createElement("td");
         priorityCell.append(
@@ -328,6 +369,9 @@ renderBrief(brief, assetNames);
         refreshButton.disabled = false;
     }
 }
+closeDialogButton.addEventListener("click", () => {
+    workOrderDialog.close();
+});
 searchInput.addEventListener(
     "input",
     applyHighAttentionFilters,

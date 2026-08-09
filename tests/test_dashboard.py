@@ -18,6 +18,8 @@ def test_dashboard_page() -> None:
     assert "<th>Asset</th>" in response.text
     assert "work-order-search" in response.text
     assert "priority-filter" in response.text
+    assert "work-order-dialog" in response.text
+    assert "detail-asset" in response.text
 
 
 def test_dashboard_stylesheet() -> None:
@@ -35,3 +37,5 @@ def test_dashboard_javascript() -> None:
     assert 'fetch("/assets"' in response.text
     assert "assetNames" in response.text
     assert "applyHighAttentionFilters" in response.text
+    assert "openWorkOrderDetails" in response.text
+    assert "showModal" in response.text

@@ -35,6 +35,7 @@ OpsBrief is being developed to surface what requires attention instead of only d
 - Seven-day upcoming work-order risk detection
 - Asset-aware work-order context throughout the dashboard
 - Dashboard search and priority filtering
+- Interactive work-order detail dialog
 
 ## API Endpoints
 
@@ -271,7 +272,8 @@ OpsBrief/
 │   └── versions/
 ├── docs/
 │   ├── images/
-│   │   └── opsbrief-dashboard.png
+│   │   ├── opsbrief-dashboard.png
+│   │   └── opsbrief-work-order-details.png
 │   └── CASE_STUDY.md
 ├── app/
 │   ├── routers/
