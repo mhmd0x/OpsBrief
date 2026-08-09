@@ -207,6 +207,49 @@ main {
     border-bottom: 1px solid var(--border);
 }
 
+.filter-bar {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-light);
+}
+
+.filter-bar label {
+    display: grid;
+    gap: 0.4rem;
+}
+
+.filter-bar label:first-child {
+    flex: 1;
+}
+
+.filter-bar span {
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.filter-bar input,
+.filter-bar select {
+    min-height: 42px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.65rem 0.75rem;
+    background: var(--background);
+    color: var(--text);
+    font: inherit;
+}
+
+.filter-bar input:focus,
+.filter-bar select:focus {
+    border-color: var(--accent);
+    outline: 2px solid rgb(77 163 255 / 25%);
+}
+
 .table-wrapper {
     overflow-x: auto;
 }
@@ -338,5 +381,10 @@ code {
 
     .metric-card {
         min-height: 150px;
+    }
+
+    .filter-bar {
+        align-items: stretch;
+        flex-direction: column;
     }
 }

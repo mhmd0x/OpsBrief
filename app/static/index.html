@@ -78,6 +78,28 @@
                 </div>
             </div>
 
+            <div class="filter-bar" aria-label="Work-order filters">
+                <label>
+                    <span>Search</span>
+                    <input
+                        id="work-order-search"
+                        type="search"
+                        placeholder="Asset, work order, or failure code"
+                    >
+                </label>
+
+                <label>
+                    <span>Priority</span>
+                    <select id="priority-filter">
+                        <option value="">All priorities</option>
+                        <option value="critical">Critical</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </label>
+            </div>
+
             <div class="table-wrapper">
                 <table>
                     <thead>

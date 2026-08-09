@@ -1,5 +1,11 @@
 const refreshButton = document.querySelector("#refresh-button");
 const statusMessage = document.querySelector("#status-message");
+const searchInput = document.querySelector("#work-order-search");
+const priorityFilter = document.querySelector("#priority-filter");
+
+let currentHighAttentionWorkOrders = [];
+let currentAssetNames = new Map();
+let currentTimezone = "UTC";
 
 function formatDate(value, timezone) {
     if (!value) {
@@ -199,6 +205,38 @@ function renderRecurring(issues, timezone) {
     }
 }
 
+function applyHighAttentionFilters() {
+    const searchTerm = searchInput.value.trim().toLowerCase();
+    const selectedPriority = priorityFilter.value;
+
+    const filteredWorkOrders =
+        currentHighAttentionWorkOrders.filter((workOrder) => {
+            const assetName =
+                currentAssetNames.get(workOrder.asset_id) ?? "";
+            const searchableText = [
+                assetName,
+                workOrder.title,
+                workOrder.failure_code ?? "",
+            ]
+                .join(" ")
+                .toLowerCase();
+
+            const matchesSearch =
+                searchableText.includes(searchTerm);
+            const matchesPriority =
+                selectedPriority === ""
+                || workOrder.priority === selectedPriority;
+
+            return matchesSearch && matchesPriority;
+        });
+
+    renderHighAttention(
+        filteredWorkOrders,
+        currentTimezone,
+        currentAssetNames,
+    );
+}
+
 function renderBrief(brief, assetNames) {
     const { summary, timezone } = brief;
 
@@ -216,11 +254,12 @@ function renderBrief(brief, assetNames) {
     document.querySelector("#generated-at").textContent =
         `Generated ${formatDate(brief.generated_at, timezone)}`;
 
-    renderHighAttention(
-        brief.high_attention_work_orders,
-        timezone,
-        assetNames,
-    );
+    currentHighAttentionWorkOrders =
+        brief.high_attention_work_orders;
+    currentAssetNames = assetNames;
+    currentTimezone = timezone;
+
+    applyHighAttentionFilters();
     renderOverdue(
         brief.overdue_work_orders,
         timezone,
@@ -289,6 +328,13 @@ renderBrief(brief, assetNames);
         refreshButton.disabled = false;
     }
 }
-
+searchInput.addEventListener(
+    "input",
+    applyHighAttentionFilters,
+);
+priorityFilter.addEventListener(
+    "change",
+    applyHighAttentionFilters,
+);
 refreshButton.addEventListener("click", loadBrief);
 loadBrief();

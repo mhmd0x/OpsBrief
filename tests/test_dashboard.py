@@ -16,6 +16,8 @@ def test_dashboard_page() -> None:
     assert "due-soon-count" in response.text
     assert "due-soon-list" in response.text
     assert "<th>Asset</th>" in response.text
+    assert "work-order-search" in response.text
+    assert "priority-filter" in response.text
 
 
 def test_dashboard_stylesheet() -> None:
@@ -32,3 +34,4 @@ def test_dashboard_javascript() -> None:
     assert "javascript" in response.headers["content-type"]
     assert 'fetch("/assets"' in response.text
     assert "assetNames" in response.text
+    assert "applyHighAttentionFilters" in response.text

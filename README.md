@@ -34,6 +34,7 @@ OpsBrief is being developed to surface what requires attention instead of only d
 - Responsive Daily Operations Brief dashboard
 - Seven-day upcoming work-order risk detection
 - Asset-aware work-order context throughout the dashboard
+- Dashboard search and priority filtering
 
 ## API Endpoints
 
