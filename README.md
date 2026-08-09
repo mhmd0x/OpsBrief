@@ -6,6 +6,8 @@ OpsBrief is a maintenance decision-support API that turns asset and work-order d
 
 ![OpsBrief Daily Operations Brief dashboard](docs/images/opsbrief-dashboard.png)
 
+[Read the full OpsBrief case study](docs/CASE_STUDY.md)
+
 ## Problem
 
 Maintenance supervisors often depend on fragmented information from CMMS records, spreadsheets, emails, messages, and shift handovers.
@@ -266,8 +268,9 @@ OpsBrief/
 ├── alembic/
 │   └── versions/
 ├── docs/
-│   └── images/
-│       └── opsbrief-dashboard.png
+│   ├── images/
+│   │   └── opsbrief-dashboard.png
+│   └── CASE_STUDY.md
 ├── app/
 │   ├── routers/
 │   │   ├── __init__.py
