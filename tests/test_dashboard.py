@@ -15,6 +15,7 @@ def test_dashboard_page() -> None:
     assert "Due soon" in response.text
     assert "due-soon-count" in response.text
     assert "due-soon-list" in response.text
+    assert "<th>Asset</th>" in response.text
 
 
 def test_dashboard_stylesheet() -> None:
@@ -29,3 +30,5 @@ def test_dashboard_javascript() -> None:
 
     assert response.status_code == 200
     assert "javascript" in response.headers["content-type"]
+    assert 'fetch("/assets"' in response.text
+    assert "assetNames" in response.text

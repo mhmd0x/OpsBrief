@@ -33,6 +33,7 @@ OpsBrief is being developed to surface what requires attention instead of only d
 - Reusable realistic maintenance demo-data seeder
 - Responsive Daily Operations Brief dashboard
 - Seven-day upcoming work-order risk detection
+- Asset-aware work-order context throughout the dashboard
 
 ## API Endpoints
 

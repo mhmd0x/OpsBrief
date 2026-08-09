@@ -27,7 +27,7 @@ function createEmptyState(message) {
     return paragraph;
 }
 
-function renderHighAttention(workOrders, timezone) {
+function renderHighAttention(workOrders, timezone, assetNames) {
     const tableBody = document.querySelector("#high-attention-body");
     tableBody.replaceChildren();
 
@@ -35,7 +35,7 @@ function renderHighAttention(workOrders, timezone) {
         const row = document.createElement("tr");
         const cell = document.createElement("td");
 
-        cell.colSpan = 5;
+        cell.colSpan = 6;
         cell.textContent = "No high-attention work orders.";
         row.append(cell);
         tableBody.append(row);
@@ -44,6 +44,11 @@ function renderHighAttention(workOrders, timezone) {
 
     for (const workOrder of workOrders) {
         const row = document.createElement("tr");
+
+        const assetCell = document.createElement("td");
+        assetCell.textContent =
+            assetNames.get(workOrder.asset_id) ?? "Unknown asset";
+
 
         const titleCell = document.createElement("td");
         titleCell.textContent = workOrder.title;
@@ -70,6 +75,7 @@ function renderHighAttention(workOrders, timezone) {
             workOrder.failure_code ?? "Not assigned";
 
         row.append(
+            assetCell,
             titleCell,
             priorityCell,
             statusCell,
@@ -80,7 +86,7 @@ function renderHighAttention(workOrders, timezone) {
     }
 }
 
-function renderOverdue(workOrders, timezone) {
+function renderOverdue(workOrders, timezone, assetNames) {
     const container = document.querySelector("#overdue-list");
     container.replaceChildren();
 
@@ -99,9 +105,12 @@ function renderOverdue(workOrders, timezone) {
         const title = document.createElement("h3");
         const description = document.createElement("p");
         const dueDate = document.createElement("span");
+        const assetName =
+            assetNames.get(workOrder.asset_id) ?? "Unknown asset";
 
         title.textContent = workOrder.title;
         description.textContent =
+            `${assetName} · ` +
             `${workOrder.status.replaceAll("_", " ")} · ` +
             `${workOrder.failure_code ?? "No failure code"}`;
         dueDate.className = "item-value";
@@ -116,7 +125,7 @@ function renderOverdue(workOrders, timezone) {
     }
 }
 
-function renderDueSoon(workOrders, timezone) {
+function renderDueSoon(workOrders, timezone, assetNames) {
     const container = document.querySelector("#due-soon-list");
     container.replaceChildren();
 
@@ -137,9 +146,12 @@ function renderDueSoon(workOrders, timezone) {
         const title = document.createElement("h3");
         const description = document.createElement("p");
         const dueDate = document.createElement("span");
+        const assetName =
+            assetNames.get(workOrder.asset_id) ?? "Unknown asset";
 
         title.textContent = workOrder.title;
         description.textContent =
+            `${assetName} · ` +
             `${workOrder.status.replaceAll("_", " ")} · ` +
             `${workOrder.priority} priority`;
         dueDate.className = "item-value";
@@ -187,7 +199,7 @@ function renderRecurring(issues, timezone) {
     }
 }
 
-function renderBrief(brief) {
+function renderBrief(brief, assetNames) {
     const { summary, timezone } = brief;
 
     document.querySelector("#overdue-count").textContent =
@@ -207,9 +219,18 @@ function renderBrief(brief) {
     renderHighAttention(
         brief.high_attention_work_orders,
         timezone,
+        assetNames,
     );
-    renderOverdue(brief.overdue_work_orders, timezone);
-    renderDueSoon(brief.due_soon_work_orders, timezone);
+    renderOverdue(
+        brief.overdue_work_orders,
+        timezone,
+        assetNames,
+    );
+    renderDueSoon(
+        brief.due_soon_work_orders,
+        timezone,
+        assetNames,
+    );
     renderRecurring(brief.recurring_issues, timezone);
 }
 
@@ -219,20 +240,41 @@ async function loadBrief() {
     statusMessage.textContent = "Refreshing operational data…";
 
     try {
-        const response = await fetch("/briefs/daily", {
-            headers: {
-                Accept: "application/json",
-            },
-        });
+        const [briefResponse, assetsResponse] = await Promise.all([
+    fetch("/briefs/daily", {
+        headers: {
+            Accept: "application/json",
+        },
+    }),
+    fetch("/assets", {
+        headers: {
+            Accept: "application/json",
+        },
+    }),
+]);
 
-        if (!response.ok) {
-            throw new Error(
-                `The API returned status ${response.status}.`,
-            );
-        }
+if (!briefResponse.ok) {
+    throw new Error(
+        `The brief API returned status ${briefResponse.status}.`,
+    );
+}
 
-        const brief = await response.json();
-        renderBrief(brief);
+if (!assetsResponse.ok) {
+    throw new Error(
+        `The assets API returned status ${assetsResponse.status}.`,
+    );
+}
+
+const [brief, assets] = await Promise.all([
+    briefResponse.json(),
+    assetsResponse.json(),
+]);
+
+const assetNames = new Map(
+    assets.map((asset) => [asset.id, asset.name]),
+);
+
+renderBrief(brief, assetNames);
 
         statusMessage.className =
             "status-message status-message--success";
