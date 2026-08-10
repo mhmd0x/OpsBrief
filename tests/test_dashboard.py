@@ -20,6 +20,8 @@ def test_dashboard_page() -> None:
     assert "priority-filter" in response.text
     assert "work-order-dialog" in response.text
     assert "detail-asset" in response.text
+    assert "recurring-issue-dialog" in response.text
+    assert "close-recurring-dialog" in response.text
 
 
 def test_dashboard_stylesheet() -> None:
@@ -39,3 +41,6 @@ def test_dashboard_javascript() -> None:
     assert "applyHighAttentionFilters" in response.text
     assert "openWorkOrderDetails" in response.text
     assert "showModal" in response.text
+    assert "openRecurringIssueDetails" in response.text
+    assert "recurringIssueDialog.showModal" in response.text
+    assert "recurringIssueDialog.close" in response.text

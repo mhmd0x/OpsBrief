@@ -207,6 +207,46 @@
         </dl>
     </dialog>
 
+</dialog>
+
+<dialog id="recurring-issue-dialog" class="work-order-dialog">
+    <div class="dialog-heading">
+        <div>
+            <p class="eyebrow">Reliability signal</p>
+            <h2 id="recurring-detail-asset">Recurring issue</h2>
+        </div>
+
+        <button
+            id="close-recurring-dialog"
+            type="button"
+            aria-label="Close recurring-issue details"
+        >
+            Close
+        </button>
+    </div>
+
+    <dl class="detail-grid">
+        <div>
+            <dt>Failure code</dt>
+            <dd id="recurring-detail-code">—</dd>
+        </div>
+        <div>
+            <dt>Occurrences</dt>
+            <dd id="recurring-detail-count">—</dd>
+        </div>
+        <div>
+            <dt>Latest occurrence</dt>
+            <dd id="recurring-detail-latest">—</dd>
+        </div>
+        <div class="detail-description">
+            <dt>Recommended action</dt>
+            <dd id="recurring-detail-action">
+                Review the failure history and begin root-cause analysis.
+            </dd>
+        </div>
+    </dl>
+</dialog>
+
     <footer>
         <p>
             Source: <code>GET /briefs/daily</code>

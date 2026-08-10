@@ -36,6 +36,7 @@ OpsBrief is being developed to surface what requires attention instead of only d
 - Asset-aware work-order context throughout the dashboard
 - Dashboard search and priority filtering
 - Interactive work-order detail dialog
+- Interactive recurring-issue reliability details
 
 ## API Endpoints
 
@@ -273,6 +274,7 @@ OpsBrief/
 ├── docs/
 │   ├── images/
 │   │   ├── opsbrief-dashboard.png
+│   │   ├── opsbrief-recurring-issue-details.png
 │   │   └── opsbrief-work-order-details.png
 │   └── CASE_STUDY.md
 ├── app/

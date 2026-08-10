@@ -44,6 +44,8 @@ The application converts work-order records into operational signals:
 
 ![OpsBrief work-order detail dialog](images/opsbrief-work-order-details.png)
 
+![OpsBrief recurring-issue reliability dialog](images/opsbrief-recurring-issue-details.png)
+
 These signals are combined into a single Daily Operations Brief that helps a supervisor quickly identify what requires attention.
 
 ## Architecture

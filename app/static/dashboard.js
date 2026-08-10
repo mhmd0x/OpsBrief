@@ -1,9 +1,19 @@
-const refreshButton = document.querySelector("#refresh-button");
-const statusMessage = document.querySelector("#status-message");
-const searchInput = document.querySelector("#work-order-search");
-const priorityFilter = document.querySelector("#priority-filter");
-const workOrderDialog = document.querySelector("#work-order-dialog");
-const closeDialogButton = document.querySelector("#close-dialog");
+const refreshButton =
+    document.querySelector("#refresh-button");
+const statusMessage =
+    document.querySelector("#status-message");
+const searchInput =
+    document.querySelector("#work-order-search");
+const priorityFilter =
+    document.querySelector("#priority-filter");
+const workOrderDialog =
+    document.querySelector("#work-order-dialog");
+const closeDialogButton =
+    document.querySelector("#close-dialog");
+const recurringIssueDialog =
+    document.querySelector("#recurring-issue-dialog");
+const closeRecurringDialogButton =
+    document.querySelector("#close-recurring-dialog");
 
 let currentHighAttentionWorkOrders = [];
 let currentAssetNames = new Map();
@@ -62,7 +72,8 @@ function openWorkOrderDetails(
 }
 
 function renderHighAttention(workOrders, timezone, assetNames) {
-    const tableBody = document.querySelector("#high-attention-body");
+    const tableBody =
+        document.querySelector("#high-attention-body");
     tableBody.replaceChildren();
 
     if (workOrders.length === 0) {
@@ -155,7 +166,20 @@ function renderOverdue(workOrders, timezone, assetNames) {
         const assetName =
             assetNames.get(workOrder.asset_id) ?? "Unknown asset";
 
-        title.textContent = workOrder.title;
+        const titleButton = document.createElement("button");
+
+        titleButton.type = "button";
+        titleButton.className = "work-order-link";
+        titleButton.textContent = workOrder.title;
+        titleButton.addEventListener("click", () => {
+            openWorkOrderDetails(
+                workOrder,
+                timezone,
+                assetNames,
+            );
+        });
+
+        title.append(titleButton);
         description.textContent =
             `${assetName} · ` +
             `${workOrder.status.replaceAll("_", " ")} · ` +
@@ -193,10 +217,22 @@ function renderDueSoon(workOrders, timezone, assetNames) {
         const title = document.createElement("h3");
         const description = document.createElement("p");
         const dueDate = document.createElement("span");
-        const assetName =
-            assetNames.get(workOrder.asset_id) ?? "Unknown asset";
+        const assetName = assetNames.get(workOrder.asset_id) ?? "Unknown asset";
 
-        title.textContent = workOrder.title;
+        const titleButton = document.createElement("button");
+
+        titleButton.type = "button";
+        titleButton.className = "work-order-link";
+        titleButton.textContent = workOrder.title;
+        titleButton.addEventListener("click", () => {
+            openWorkOrderDetails(
+                workOrder,
+                timezone,
+                assetNames,
+            );
+        });
+
+        title.append(titleButton);
         description.textContent =
             `${assetName} · ` +
             `${workOrder.status.replaceAll("_", " ")} · ` +
@@ -211,6 +247,31 @@ function renderDueSoon(workOrders, timezone, assetNames) {
         item.append(details, dueDate);
         container.append(item);
     }
+}
+
+function openRecurringIssueDetails(issue, timezone) {
+    document.querySelector(
+        "#recurring-detail-asset",
+    ).textContent = issue.asset_name;
+    document.querySelector(
+        "#recurring-detail-code",
+    ).textContent = issue.failure_code;
+    document.querySelector(
+        "#recurring-detail-count",
+    ).textContent = String(issue.occurrence_count);
+    document.querySelector(
+        "#recurring-detail-latest",
+    ).textContent = formatDate(
+        issue.latest_occurrence,
+        timezone,
+    );
+    document.querySelector(
+        "#recurring-detail-action",
+    ).textContent =
+        `This failure has occurred ${issue.occurrence_count} times. ` +
+        "Review the maintenance history and begin root-cause analysis.";
+
+    recurringIssueDialog.showModal();
 }
 
 function renderRecurring(issues, timezone) {
@@ -233,7 +294,16 @@ function renderRecurring(issues, timezone) {
         const description = document.createElement("p");
         const count = document.createElement("span");
 
-        title.textContent = issue.asset_name;
+        const titleButton = document.createElement("button");
+
+        titleButton.type = "button";
+        titleButton.className = "work-order-link";
+        titleButton.textContent = issue.asset_name;
+        titleButton.addEventListener("click", () => {
+            openRecurringIssueDetails(issue, timezone);
+        });
+
+title.append(titleButton);
         description.textContent =
             `${issue.failure_code} · Latest: ` +
             formatDate(issue.latest_occurrence, timezone);
@@ -369,6 +439,9 @@ renderBrief(brief, assetNames);
         refreshButton.disabled = false;
     }
 }
+closeRecurringDialogButton.addEventListener("click", () => {
+    recurringIssueDialog.close();
+});
 closeDialogButton.addEventListener("click", () => {
     workOrderDialog.close();
 });
