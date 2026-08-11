@@ -338,6 +338,14 @@ tbody tr:hover {
     white-space: nowrap;
 }
 
+.item-value--success {
+    color: var(--info);
+}
+
+.item-value--danger {
+    color: var(--danger);
+}
+
 .empty-state {
     padding-block: 1.25rem;
     color: var(--muted);
@@ -383,6 +391,30 @@ tbody tr:hover {
 .pm-metric {
     padding: 1.25rem;
     background: var(--surface);
+}
+
+.pm-metric {
+    padding: 1.25rem;
+    background: var(--surface);
+}
+
+.pm-metric-button {
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+    color: var(--text);
+    text-align: left;
+}
+
+.pm-metric-button:hover {
+    background: var(--surface-light);
+}
+
+.pm-metric-button:focus-visible {
+    position: relative;
+    z-index: 1;
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
 }
 
 .pm-metric span {

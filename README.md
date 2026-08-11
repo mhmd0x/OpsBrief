@@ -41,6 +41,7 @@ OpsBrief is being developed to surface what requires attention instead of only d
 - Dashboard search and priority filtering
 - Interactive work-order detail dialog
 - Interactive recurring-issue reliability details
+- Interactive planned, completed, remaining, and overdue PM drill-downs
 
 ## API Endpoints
 
@@ -279,6 +280,7 @@ OpsBrief/
 ├── docs/
 │   ├── images/
 │   │   ├── opsbrief-dashboard.png
+│   │   ├── opsbrief-pm-work-orders.png
 │   │   ├── opsbrief-recurring-issue-details.png
 │   │   └── opsbrief-work-order-details.png
 │   └── CASE_STUDY.md

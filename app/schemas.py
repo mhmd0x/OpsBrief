@@ -164,3 +164,7 @@ class MonthlyPMCompliance(BaseModel):
     on_plan: bool
     calendar_days_remaining: int
     required_per_day: float
+    planned_work_orders: list[WorkOrder]
+    completed_work_orders: list[WorkOrder]
+    remaining_work_orders: list[WorkOrder]
+    overdue_work_orders: list[WorkOrder]

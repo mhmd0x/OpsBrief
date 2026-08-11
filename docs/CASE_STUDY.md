@@ -20,7 +20,6 @@ This fragmentation makes it harder to answer important daily questions:
 - Which assets are experiencing recurring failures?
 - What should the maintenance team prioritize first?
 
-
 ## Project Goals
 
 OpsBrief was built to:
@@ -47,11 +46,15 @@ The application converts work-order records into operational signals:
 - Monthly preventive-maintenance compliance
 - Required calendar-day completion pace to reach the monthly target
 
+Supervisors can open the planned, completed, remaining, and overdue PM totals to inspect the exact work orders behind each KPI.
+
+![OpsBrief monthly PM work-order drill-down](images/opsbrief-pm-work-orders.png)
+
 ![OpsBrief work-order detail dialog](images/opsbrief-work-order-details.png)
 
 ![OpsBrief recurring-issue reliability dialog](images/opsbrief-recurring-issue-details.png)
 
-These signals are combined into a single Daily Operations Brief that helps a supervisor quickly identify what requires attention.
+These signals are presented together in the OpsBrief dashboard, helping supervisors quickly identify what requires attention and inspect the work orders behind each KPI.
 
 ## Architecture
 

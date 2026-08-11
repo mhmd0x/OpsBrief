@@ -67,6 +67,10 @@ def test_monthly_pm_compliance() -> None:
     assert compliance["planned_count"] == 2
     assert compliance["completed_count"] == 1
     assert compliance["remaining_count"] == 1
+    assert len(compliance["planned_work_orders"]) == 2
+    assert len(compliance["completed_work_orders"]) == 1
+    assert len(compliance["remaining_work_orders"]) == 1
+    assert len(compliance["overdue_work_orders"]) in {0, 1}
     assert compliance["planned_to_date_count"] == 2
     assert compliance["completed_to_date_count"] == 1
     assert compliance["completion_percentage"] == 50.0

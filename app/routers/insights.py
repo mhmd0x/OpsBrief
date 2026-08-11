@@ -136,6 +136,11 @@ def get_monthly_pm_compliance(
         for work_order in planned_work_orders
         if work_order.status == "completed"
     ]
+    remaining_work_orders = [
+        work_order
+        for work_order in planned_work_orders
+        if work_order.status != "completed"
+    ]
 
     planned_to_date = [
         work_order
@@ -197,4 +202,8 @@ def get_monthly_pm_compliance(
         ),
         calendar_days_remaining=calendar_days_remaining,
         required_per_day=required_per_day,
+        planned_work_orders=planned_work_orders,
+        completed_work_orders=completed_work_orders,
+        remaining_work_orders=remaining_work_orders,
+        overdue_work_orders=overdue_work_orders,
     )

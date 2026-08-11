@@ -27,6 +27,10 @@ def test_dashboard_page() -> None:
     assert "pm-completion-percentage" in response.text
     assert "pm-progress-bar" in response.text
     assert "pm-required-pace" in response.text
+    assert 'data-pm-list="planned"' in response.text
+    assert 'data-pm-list="completed"' in response.text
+    assert "pm-list-dialog" in response.text
+    assert "pm-list-content" in response.text
 
 
 def test_dashboard_stylesheet() -> None:
@@ -54,3 +58,5 @@ def test_dashboard_javascript() -> None:
         'fetch("/insights/monthly-pm-compliance"'
         in response.text
     )
+    assert "openPMWorkOrderList" in response.text
+    assert "pmMetricButtons" in response.text

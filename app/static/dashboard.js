@@ -14,10 +14,17 @@ const recurringIssueDialog =
     document.querySelector("#recurring-issue-dialog");
 const closeRecurringDialogButton =
     document.querySelector("#close-recurring-dialog");
+const pmListDialog =
+    document.querySelector("#pm-list-dialog");
+const closePMListDialogButton =
+    document.querySelector("#close-pm-list-dialog");
+const pmMetricButtons =
+    document.querySelectorAll("[data-pm-list]");
 
 let currentHighAttentionWorkOrders = [];
 let currentAssetNames = new Map();
 let currentTimezone = "UTC";
+let currentPMCompliance = null;
 
 function formatDate(value, timezone) {
     if (!value) {
@@ -348,7 +355,115 @@ function applyHighAttentionFilters() {
     );
 }
 
+function openPMWorkOrderList(category) {
+    if (!currentPMCompliance) {
+        return;
+    }
+
+    const categories = {
+        planned: {
+            title: "Planned PM work orders",
+            field: "planned_work_orders",
+        },
+        completed: {
+            title: "Completed PM work orders",
+            field: "completed_work_orders",
+        },
+        remaining: {
+            title: "Remaining PM work orders",
+            field: "remaining_work_orders",
+        },
+        overdue: {
+            title: "Overdue PM work orders",
+            field: "overdue_work_orders",
+        },
+    };
+
+    const selectedCategory = categories[category];
+
+    if (!selectedCategory) {
+        return;
+    }
+
+    const workOrders =
+        currentPMCompliance[selectedCategory.field];
+    const container =
+        document.querySelector("#pm-list-content");
+
+    document.querySelector("#pm-list-title").textContent =
+        selectedCategory.title;
+    container.replaceChildren();
+
+    if (workOrders.length === 0) {
+        container.append(
+            createEmptyState(
+                `No ${category} PM work orders.`,
+            ),
+        );
+        pmListDialog.showModal();
+        return;
+    }
+
+    for (const workOrder of workOrders) {
+        const item = document.createElement("article");
+        item.className = "item";
+
+        const details = document.createElement("div");
+        const title = document.createElement("h3");
+        const titleButton =
+            document.createElement("button");
+        const description = document.createElement("p");
+        const dueDate = document.createElement("span");
+
+        const assetName =
+            currentAssetNames.get(workOrder.asset_id)
+            ?? "Unknown asset";
+
+        titleButton.type = "button";
+        titleButton.className = "work-order-link";
+        titleButton.textContent = workOrder.title;
+        titleButton.addEventListener("click", () => {
+            pmListDialog.close();
+            openWorkOrderDetails(
+                workOrder,
+                currentTimezone,
+                currentAssetNames,
+            );
+        });
+
+        title.append(titleButton);
+        description.textContent =
+            `${assetName} · ` +
+            `${workOrder.status.replaceAll("_", " ")}`;
+        dueDate.className = "item-value";
+
+        if (workOrder.status === "completed") {
+            dueDate.classList.add(
+                "item-value--success",
+            );
+        } else if (
+            new Date(workOrder.due_date) < new Date()
+        ) {
+            dueDate.classList.add(
+                "item-value--danger",
+            );
+        }
+
+        dueDate.textContent = formatDate(
+            workOrder.due_date,
+            currentTimezone,
+        );
+
+        details.append(title, description);
+        item.append(details, dueDate);
+        container.append(item);
+    }
+
+    pmListDialog.showModal();
+}
+
 function renderMonthlyPMCompliance(compliance) {
+    currentPMCompliance = compliance;
     const [
         year,
         month,
@@ -539,8 +654,18 @@ async function loadBrief() {
         refreshButton.disabled = false;
     }
 }
+
+for (const button of pmMetricButtons) {
+    button.addEventListener("click", () => {
+        openPMWorkOrderList(button.dataset.pmList);
+    });
+}
+
 closeRecurringDialogButton.addEventListener("click", () => {
     recurringIssueDialog.close();
+});
+closePMListDialogButton.addEventListener("click", () => {
+    pmListDialog.close();
 });
 closeDialogButton.addEventListener("click", () => {
     workOrderDialog.close();

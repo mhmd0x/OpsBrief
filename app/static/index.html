@@ -94,25 +94,41 @@
             </div>
 
             <div class="pm-metric-grid">
-                <div class="pm-metric">
+                <button
+                    type="button"
+                    class="pm-metric pm-metric-button"
+                    data-pm-list="planned"
+                >
                     <span>Planned</span>
                     <strong id="pm-planned-count">—</strong>
-                </div>
+                </button>
 
-                <div class="pm-metric">
+                <button
+                    type="button"
+                    class="pm-metric pm-metric-button"
+                    data-pm-list="completed"
+                >
                     <span>Completed</span>
                     <strong id="pm-completed-count">—</strong>
-                </div>
+                </button>
 
-                <div class="pm-metric">
+                <button
+                    type="button"
+                    class="pm-metric pm-metric-button"
+                    data-pm-list="remaining"
+                >
                     <span>Remaining</span>
                     <strong id="pm-remaining-count">—</strong>
-                </div>
+                </button>
 
-                <div class="pm-metric">
+                <button
+                    type="button"
+                    class="pm-metric pm-metric-button"
+                    data-pm-list="overdue"
+                >
                     <span>Overdue</span>
                     <strong id="pm-overdue-count">—</strong>
-                </div>
+                </button>
             </div>
 
             <div class="pm-progress-section">
@@ -235,6 +251,27 @@
             </section>
         </div>
     </main>
+
+    <dialog id="pm-list-dialog" class="work-order-dialog">
+        <div class="dialog-heading">
+            <div>
+                <p class="eyebrow">Preventive maintenance</p>
+                <h2 id="pm-list-title">Monthly PM work orders</h2>
+            </div>
+
+            <button
+                id="close-pm-list-dialog"
+                type="button"
+                aria-label="Close PM work-order list"
+            >
+                Close
+            </button>
+        </div>
+
+        <div id="pm-list-content" class="item-list">
+            <p>Loading PM work orders…</p>
+        </div>
+    </dialog>
 
     <dialog id="work-order-dialog" class="work-order-dialog">
         <div class="dialog-heading">
