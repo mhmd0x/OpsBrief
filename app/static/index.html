@@ -70,6 +70,79 @@
             </article>
         </section>
 
+        <section
+            class="dashboard-panel pm-compliance-panel"
+            aria-labelledby="pm-compliance-title"
+        >
+            <div class="panel-heading pm-compliance-heading">
+                <div>
+                    <p class="eyebrow">Preventive maintenance</p>
+                    <h2 id="pm-compliance-title">
+                        Monthly PM compliance
+                    </h2>
+                    <p id="pm-month">
+                        Loading the current PM plan…
+                    </p>
+                </div>
+
+                <span
+                    id="pm-plan-status"
+                    class="pm-plan-status"
+                >
+                    Checking plan…
+                </span>
+            </div>
+
+            <div class="pm-metric-grid">
+                <div class="pm-metric">
+                    <span>Planned</span>
+                    <strong id="pm-planned-count">—</strong>
+                </div>
+
+                <div class="pm-metric">
+                    <span>Completed</span>
+                    <strong id="pm-completed-count">—</strong>
+                </div>
+
+                <div class="pm-metric">
+                    <span>Remaining</span>
+                    <strong id="pm-remaining-count">—</strong>
+                </div>
+
+                <div class="pm-metric">
+                    <span>Overdue</span>
+                    <strong id="pm-overdue-count">—</strong>
+                </div>
+            </div>
+
+            <div class="pm-progress-section">
+                <div class="pm-progress-heading">
+                    <span>Monthly completion</span>
+                    <strong id="pm-completion-percentage">
+                        —%
+                    </strong>
+                </div>
+
+                <div
+                    class="pm-progress-track"
+                    role="progressbar"
+                    aria-label="Monthly PM completion"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow="0"
+                >
+                    <div
+                        id="pm-progress-bar"
+                        class="pm-progress-bar"
+                    ></div>
+                </div>
+
+                <p id="pm-required-pace">
+                    Calculating the required daily pace…
+                </p>
+            </div>
+        </section>
+
         <section class="dashboard-panel">
             <div class="panel-heading">
                 <div>
@@ -206,8 +279,6 @@
             </div>
         </dl>
     </dialog>
-
-</dialog>
 
 <dialog id="recurring-issue-dialog" class="work-order-dialog">
     <div class="dialog-heading">

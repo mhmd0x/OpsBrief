@@ -42,11 +42,19 @@ class WorkOrderStatus(StrEnum):
     CANCELLED = "cancelled"
 
 
+class MaintenanceType(StrEnum):
+    PREVENTIVE = "preventive"
+    CORRECTIVE = "corrective"
+    PREDICTIVE = "predictive"
+    INSPECTION = "inspection"
+
+
 class WorkOrderCreate(BaseModel):
     asset_id: UUID
     title: str = Field(min_length=1, max_length=200)
     description: str | None = Field(default=None, max_length=1000)
     priority: WorkOrderPriority = WorkOrderPriority.MEDIUM
+    maintenance_type: MaintenanceType = MaintenanceType.CORRECTIVE
     due_date: datetime
     failure_code: str | None = Field(
         default=None,
@@ -71,6 +79,7 @@ class WorkOrderUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=200)
     description: str | None = Field(default=None, max_length=1000)
     priority: WorkOrderPriority | None = None
+    maintenance_type: MaintenanceType | None = None
     status: WorkOrderStatus | None = None
     due_date: datetime | None = None
     failure_code: str | None = Field(
@@ -107,6 +116,8 @@ class WorkOrder(BaseModel):
     description: str | None
     priority: WorkOrderPriority
     status: WorkOrderStatus
+    maintenance_type: MaintenanceType
+    completed_at: datetime | None
     due_date: datetime
     created_at: datetime
     updated_at: datetime
@@ -139,3 +150,17 @@ class DailyOperationsBrief(BaseModel):
     high_attention_work_orders: list[WorkOrder]
     recurring_issues: list[RecurringIssueSignal]
 
+
+class MonthlyPMCompliance(BaseModel):
+    month: str
+    timezone: str
+    planned_count: int
+    completed_count: int
+    remaining_count: int
+    planned_to_date_count: int
+    completed_to_date_count: int
+    overdue_count: int
+    completion_percentage: float
+    on_plan: bool
+    calendar_days_remaining: int
+    required_per_day: float

@@ -27,6 +27,10 @@ OpsBrief is being developed to surface what requires attention instead of only d
 - Due-today detection using the Asia/Riyadh timezone
 - High-attention work-order detection
 - Recurring failure detection by asset and failure code
+- Preventive, corrective, predictive, and inspection work-order classification
+- Automatic work-order completion timestamps
+- Monthly PM compliance and schedule-performance insight
+- Calendar-day recovery pace required to reach 100% monthly PM completion
 - Daily Operations Brief API
 - Isolated automated database tests
 - API-key protection for create, update, and delete operations
@@ -59,6 +63,7 @@ OpsBrief is being developed to surface what requires attention instead of only d
 | `PATCH` | `/work-orders/{work_order_id}` | Update a work order |
 | `DELETE` | `/work-orders/{work_order_id}` | Delete a work order |
 | `GET` | `/insights/recurring-issues` | Detect recurring asset failures |
+| `GET` | `/insights/monthly-pm-compliance` | Measure monthly PM completion, plan status, and required daily pace |
 | `GET` | `/briefs/daily` | Generate the Daily Operations Brief |
 
 Interactive API documentation is available at `/docs` while the application is running.
@@ -302,6 +307,7 @@ OpsBrief/
 │   ├── test_dashboard.py
 │   ├── test_due_soon.py
 │   ├── test_health.py
+│   ├── test_pm_compliance.py
 │   ├── test_security.py
 │   └── test_work_orders.py
 ├── .dockerignore

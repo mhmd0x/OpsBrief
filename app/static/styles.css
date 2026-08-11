@@ -343,6 +343,98 @@ tbody tr:hover {
     color: var(--muted);
 }
 
+.pm-compliance-heading {
+    align-items: flex-start;
+}
+
+.pm-compliance-heading #pm-month {
+    margin: 0.35rem 0 0;
+    color: var(--muted);
+}
+
+.pm-plan-status {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.4rem 0.75rem;
+    background: var(--surface-light);
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.pm-plan-status--success {
+    border-color: var(--info);
+    color: var(--info);
+}
+
+.pm-plan-status--danger {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.pm-metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--border);
+}
+
+.pm-metric {
+    padding: 1.25rem;
+    background: var(--surface);
+}
+
+.pm-metric span {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.pm-metric strong {
+    font-size: 1.8rem;
+}
+
+.pm-progress-section {
+    padding: 1.25rem;
+    border-top: 1px solid var(--border);
+}
+
+.pm-progress-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.65rem;
+}
+
+.pm-progress-heading span {
+    color: var(--muted);
+    font-weight: 700;
+}
+
+.pm-progress-track {
+    height: 12px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--surface-light);
+}
+
+.pm-progress-bar {
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--accent);
+    transition: width 300ms ease;
+}
+
+#pm-required-pace {
+    margin: 0.75rem 0 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
 footer {
     padding-block: 1rem 2rem;
     font-size: 0.85rem;
@@ -437,7 +529,8 @@ code {
 
 @media (max-width: 850px) {
     .metric-grid,
-    .two-column-grid {
+    .two-column-grid,
+    .pm-metric-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
@@ -473,5 +566,13 @@ code {
 
     .detail-description {
         grid-column: auto;
+    }
+    .pm-compliance-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .pm-metric-grid {
+        grid-template-columns: 1fr;
     }
 }

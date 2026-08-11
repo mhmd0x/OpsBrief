@@ -293,7 +293,11 @@ def update_work_order(
                     f"to {new_status_value}"
                 ),
             )
-
+        if (
+            new_status_value == "completed"
+            and work_order.status != "completed"
+        ):
+            update_fields["completed_at"] = datetime.now(UTC)
         update_fields["status"] = new_status_value
 
     for field, value in update_fields.items():

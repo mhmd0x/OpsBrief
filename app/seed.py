@@ -5,7 +5,11 @@ from sqlalchemy import select
 from app.config import APP_TIMEZONE
 from app.database import SessionLocal
 from app.models import AssetModel, WorkOrderModel
-from app.schemas import WorkOrderPriority, WorkOrderStatus
+from app.schemas import (
+    MaintenanceType,
+    WorkOrderPriority,
+    WorkOrderStatus,
+)
 
 
 def seed_demo_data() -> None:
@@ -42,12 +46,26 @@ def seed_demo_data() -> None:
         database.flush()
 
         local_now = datetime.now(APP_TIMEZONE)
+
         due_today = local_now.replace(
             hour=12,
             minute=0,
             second=0,
             microsecond=0,
         ).astimezone(UTC)
+
+        month_start = local_now.replace(
+            day=1,
+            hour=12,
+            minute=0,
+            second=0,
+            microsecond=0,
+        )
+
+        def pm_due_date(day: int) -> datetime:
+            return month_start.replace(
+                day=day
+            ).astimezone(UTC)
 
         work_orders = [
             WorkOrderModel(
@@ -91,8 +109,61 @@ def seed_demo_data() -> None:
                 title="Perform generator battery inspection",
                 description="Check battery voltage and terminal condition.",
                 priority=WorkOrderPriority.LOW,
+                maintenance_type=MaintenanceType.PREVENTIVE,
                 status=WorkOrderStatus.OPEN,
-                due_date=datetime.now(UTC) + timedelta(days=7),
+                due_date=pm_due_date(26),
+                failure_code=None,
+            ),
+            WorkOrderModel(
+                asset_id=assets[0].id,
+                title="Inspect compressor air filter",
+                description="Complete the scheduled monthly filter inspection.",
+                priority=WorkOrderPriority.MEDIUM,
+                maintenance_type=MaintenanceType.PREVENTIVE,
+                status=WorkOrderStatus.COMPLETED,
+                completed_at=datetime.now(UTC),
+                due_date=pm_due_date(3),
+                failure_code=None,
+            ),
+            WorkOrderModel(
+                asset_id=assets[1].id,
+                title="Lubricate pump bearings",
+                description="Complete scheduled bearing lubrication.",
+                priority=WorkOrderPriority.MEDIUM,
+                maintenance_type=MaintenanceType.PREVENTIVE,
+                status=WorkOrderStatus.COMPLETED,
+                completed_at=datetime.now(UTC),
+                due_date=pm_due_date(6),
+                failure_code=None,
+            ),
+            WorkOrderModel(
+                asset_id=assets[2].id,
+                title="Test generator battery capacity",
+                description="Perform the scheduled monthly capacity test.",
+                priority=WorkOrderPriority.HIGH,
+                maintenance_type=MaintenanceType.PREVENTIVE,
+                status=WorkOrderStatus.OPEN,
+                due_date=pm_due_date(9),
+                failure_code=None,
+            ),
+            WorkOrderModel(
+                asset_id=assets[0].id,
+                title="Replace compressor intake filter",
+                description="Replace the scheduled intake-filter element.",
+                priority=WorkOrderPriority.MEDIUM,
+                maintenance_type=MaintenanceType.PREVENTIVE,
+                status=WorkOrderStatus.OPEN,
+                due_date=pm_due_date(14),
+                failure_code=None,
+            ),
+            WorkOrderModel(
+                asset_id=assets[1].id,
+                title="Check pump and motor alignment",
+                description="Complete the scheduled alignment inspection.",
+                priority=WorkOrderPriority.MEDIUM,
+                maintenance_type=MaintenanceType.PREVENTIVE,
+                status=WorkOrderStatus.IN_PROGRESS,
+                due_date=pm_due_date(20),
                 failure_code=None,
             ),
         ]

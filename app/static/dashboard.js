@@ -348,6 +348,85 @@ function applyHighAttentionFilters() {
     );
 }
 
+function renderMonthlyPMCompliance(compliance) {
+    const [
+        year,
+        month,
+    ] = compliance.month.split("-").map(Number);
+
+    const monthLabel = new Intl.DateTimeFormat(
+        "en",
+        {
+            month: "long",
+            year: "numeric",
+            timeZone: "UTC",
+        },
+    ).format(new Date(Date.UTC(year, month - 1, 1)));
+
+    document.querySelector("#pm-month").textContent =
+        `${monthLabel} preventive-maintenance plan`;
+    document.querySelector("#pm-planned-count").textContent =
+        compliance.planned_count;
+    document.querySelector("#pm-completed-count").textContent =
+        compliance.completed_count;
+    document.querySelector("#pm-remaining-count").textContent =
+        compliance.remaining_count;
+    document.querySelector("#pm-overdue-count").textContent =
+        compliance.overdue_count;
+    document.querySelector(
+        "#pm-completion-percentage",
+    ).textContent = `${compliance.completion_percentage}%`;
+
+    const progressTrack =
+        document.querySelector(".pm-progress-track");
+    const progressBar =
+        document.querySelector("#pm-progress-bar");
+    const percentage = Math.min(
+        Math.max(compliance.completion_percentage, 0),
+        100,
+    );
+
+    progressBar.style.width = `${percentage}%`;
+    progressTrack.setAttribute(
+        "aria-valuenow",
+        String(percentage),
+    );
+
+    const planStatus =
+        document.querySelector("#pm-plan-status");
+
+    planStatus.className = "pm-plan-status";
+
+    if (compliance.planned_count === 0) {
+        planStatus.textContent = "No PM plan";
+    } else if (compliance.on_plan) {
+        planStatus.textContent = "On plan";
+        planStatus.classList.add(
+            "pm-plan-status--success",
+        );
+    } else {
+        planStatus.textContent = "Behind plan";
+        planStatus.classList.add(
+            "pm-plan-status--danger",
+        );
+    }
+
+    const requiredPace =
+        document.querySelector("#pm-required-pace");
+
+    if (compliance.remaining_count === 0) {
+        requiredPace.textContent =
+            "The monthly preventive-maintenance plan is complete.";
+    } else {
+        requiredPace.textContent =
+            `${compliance.completed_to_date_count} of ` +
+            `${compliance.planned_to_date_count} PMs due through ` +
+            `today are complete. ${compliance.required_per_day} ` +
+            `PMs per calendar day are required across the remaining ` +
+            `${compliance.calendar_days_remaining} days to reach 100%.`;
+    }
+}
+
 function renderBrief(brief, assetNames) {
     const { summary, timezone } = brief;
 
@@ -390,41 +469,62 @@ async function loadBrief() {
     statusMessage.textContent = "Refreshing operational data…";
 
     try {
-        const [briefResponse, assetsResponse] = await Promise.all([
-    fetch("/briefs/daily", {
-        headers: {
-            Accept: "application/json",
-        },
-    }),
-    fetch("/assets", {
-        headers: {
-            Accept: "application/json",
-        },
-    }),
-]);
+        const [
+            briefResponse,
+            assetsResponse,
+            pmResponse,
+        ] = await Promise.all([
+            fetch("/briefs/daily", {
+                headers: {
+                    Accept: "application/json",
+                },
+            }),
+            fetch("/assets", {
+                headers: {
+                    Accept: "application/json",
+                },
+            }),
+            fetch("/insights/monthly-pm-compliance", {
+                headers: {
+                    Accept: "application/json",
+                },
+            }),
+        ]);
 
-if (!briefResponse.ok) {
-    throw new Error(
-        `The brief API returned status ${briefResponse.status}.`,
-    );
-}
+        if (!briefResponse.ok) {
+            throw new Error(
+                `The brief API returned status ${briefResponse.status}.`,
+            );
+        }
 
-if (!assetsResponse.ok) {
-    throw new Error(
-        `The assets API returned status ${assetsResponse.status}.`,
-    );
-}
+        if (!assetsResponse.ok) {
+            throw new Error(
+                `The assets API returned status ${assetsResponse.status}.`,
+            );
+        }
 
-const [brief, assets] = await Promise.all([
-    briefResponse.json(),
-    assetsResponse.json(),
-]);
+        if (!pmResponse.ok) {
+            throw new Error(
+                `The PM API returned status ${pmResponse.status}.`,
+            );
+        }
 
-const assetNames = new Map(
-    assets.map((asset) => [asset.id, asset.name]),
-);
+        const [
+            brief,
+            assets,
+            pmCompliance,
+        ] = await Promise.all([
+            briefResponse.json(),
+            assetsResponse.json(),
+            pmResponse.json(),
+        ]);
 
-renderBrief(brief, assetNames);
+        const assetNames = new Map(
+            assets.map((asset) => [asset.id, asset.name]),
+        );
+
+        renderBrief(brief, assetNames);
+        renderMonthlyPMCompliance(pmCompliance);
 
         statusMessage.className =
             "status-message status-message--success";

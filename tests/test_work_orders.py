@@ -640,6 +640,12 @@ def test_reject_invalid_status_transition() -> None:
 
     assert complete_response.status_code == 200
 
+    completed_work_order = complete_response.json()
+
+    assert completed_work_order["status"] == "completed"
+    assert completed_work_order["completed_at"] is not None
+    assert completed_work_order["maintenance_type"] == "corrective"
+
     reopen_response = client.patch(
         f"/work-orders/{work_order['id']}",
         json={"status": "open"},

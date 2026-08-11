@@ -67,6 +67,16 @@ class WorkOrderModel(Base):
         default="open",
         nullable=False,
     )
+    maintenance_type: Mapped[str] = mapped_column(
+        String(20),
+        default="corrective",
+        nullable=False,
+        index=True,
+    )
+    completed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
     due_date: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,

@@ -14,9 +14,12 @@ This fragmentation makes it harder to answer important daily questions:
 
 - Which work orders are overdue?
 - What is due today or within the next seven days?
+- Is the monthly preventive-maintenance plan on schedule?
+- How many PMs must be completed each day to recover a plan gap?
 - Which items require immediate attention?
 - Which assets are experiencing recurring failures?
 - What should the maintenance team prioritize first?
+
 
 ## Project Goals
 
@@ -41,6 +44,8 @@ The application converts work-order records into operational signals:
 - Work orders due within seven days
 - High-attention work orders
 - Recurring failures by asset and failure code
+- Monthly preventive-maintenance compliance
+- Required calendar-day completion pace to reach the monthly target
 
 ![OpsBrief work-order detail dialog](images/opsbrief-work-order-details.png)
 
@@ -66,7 +71,7 @@ PostgreSQL
 
 ## Testing and Quality
 
-OpsBrief includes 38 automated tests covering:
+OpsBrief includes 39 automated tests covering:
 
 - Health checks
 - Asset creation, retrieval, updating, and deletion
@@ -78,6 +83,7 @@ OpsBrief includes 38 automated tests covering:
 - Daily Operations Brief generation
 - API-key authorization
 - Dashboard and static-file delivery
+- Monthly PM compliance, plan-status, and recovery-pace calculations
 
 Tests use an isolated in-memory SQLite database, preventing test data from modifying the PostgreSQL development database.
 

@@ -22,6 +22,11 @@ def test_dashboard_page() -> None:
     assert "detail-asset" in response.text
     assert "recurring-issue-dialog" in response.text
     assert "close-recurring-dialog" in response.text
+    assert "Monthly PM compliance" in response.text
+    assert "pm-planned-count" in response.text
+    assert "pm-completion-percentage" in response.text
+    assert "pm-progress-bar" in response.text
+    assert "pm-required-pace" in response.text
 
 
 def test_dashboard_stylesheet() -> None:
@@ -44,3 +49,8 @@ def test_dashboard_javascript() -> None:
     assert "openRecurringIssueDetails" in response.text
     assert "recurringIssueDialog.showModal" in response.text
     assert "recurringIssueDialog.close" in response.text
+    assert "renderMonthlyPMCompliance" in response.text
+    assert (
+        'fetch("/insights/monthly-pm-compliance"'
+        in response.text
+    )
