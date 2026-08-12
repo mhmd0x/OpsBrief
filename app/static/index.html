@@ -199,6 +199,49 @@
             </div>
         </section>
 
+        <section
+            class="dashboard-panel"
+            aria-labelledby="backlog-aging-title"
+        >
+            <div class="panel-heading backlog-aging-heading">
+                <div>
+                    <p class="eyebrow">Backlog health</p>
+                    <h2 id="backlog-aging-title">
+                        Work-order backlog aging
+                    </h2>
+                    <p id="backlog-aging-summary">
+                        Loading backlog age information…
+                    </p>
+                </div>
+
+                <div class="backlog-aging-overview">
+                    <strong id="backlog-total-count">—</strong>
+                    <span>active work orders</span>
+                </div>
+            </div>
+
+            <div
+                id="backlog-aging-buckets"
+                class="backlog-aging-grid"
+                aria-label="Active work orders grouped by age"
+            >
+                <p class="empty-state">
+                    Loading backlog aging…
+                </p>
+            </div>
+
+            <div class="backlog-aging-footer">
+                <p>
+                    Average age:
+                    <strong id="backlog-average-age">—</strong>
+                </p>
+                <p>
+                    Oldest:
+                    <strong id="backlog-oldest-age">—</strong>
+                </p>
+            </div>
+        </section>
+
         <section class="dashboard-panel">
             <div class="panel-heading">
                 <div>

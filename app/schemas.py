@@ -184,3 +184,19 @@ class YearToDatePMCompliance(BaseModel):
     completed_count: int
     completion_percentage: float
     months: list[MonthlyPMTrendPoint]
+
+
+class BacklogAgeBucket(BaseModel):
+    label: str
+    minimum_days: int
+    maximum_days: int | None
+    work_order_count: int
+
+
+class WorkOrderBacklogAging(BaseModel):
+    generated_at: datetime
+    timezone: str
+    total_backlog_count: int
+    average_age_days: float
+    oldest_age_days: int
+    buckets: list[BacklogAgeBucket]

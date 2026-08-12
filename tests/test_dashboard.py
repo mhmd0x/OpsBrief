@@ -34,6 +34,9 @@ def test_dashboard_page() -> None:
     assert "Year-to-date PM compliance" in response.text
     assert "ytd-pm-percentage" in response.text
     assert "ytd-pm-chart" in response.text
+    assert "Work-order backlog aging" in response.text
+    assert "backlog-total-count" in response.text
+    assert "backlog-aging-buckets" in response.text
 
 
 def test_dashboard_stylesheet() -> None:
@@ -66,5 +69,10 @@ def test_dashboard_javascript() -> None:
     assert "renderYearToDatePMCompliance" in response.text
     assert (
         'fetch("/insights/ytd-pm-compliance"'
+        in response.text
+    )
+    assert "renderBacklogAging" in response.text
+    assert (
+        'fetch("/insights/work-order-backlog-aging"'
         in response.text
     )

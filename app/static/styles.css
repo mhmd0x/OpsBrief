@@ -393,11 +393,6 @@ tbody tr:hover {
     background: var(--surface);
 }
 
-.pm-metric {
-    padding: 1.25rem;
-    background: var(--surface);
-}
-
 .pm-metric-button {
     width: 100%;
     border: 0;
@@ -654,11 +649,88 @@ code {
     color: var(--info);
 }
 
+.backlog-aging-heading {
+    align-items: flex-start;
+}
+
+#backlog-aging-summary {
+    margin: 0.35rem 0 0;
+    color: var(--muted);
+}
+
+.backlog-aging-overview {
+    text-align: right;
+}
+
+.backlog-aging-overview strong {
+    display: block;
+    color: var(--info);
+    font-size: 2rem;
+}
+
+.backlog-aging-overview span {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.backlog-aging-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+
+.backlog-aging-bucket {
+    padding: 1.25rem;
+    background: var(--surface);
+}
+
+.backlog-aging-bucket span {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.backlog-aging-bucket strong {
+    font-size: 1.8rem;
+}
+
+.backlog-aging-bucket--warning strong {
+    color: var(--warning);
+}
+
+.backlog-aging-bucket--danger strong {
+    color: var(--danger);
+}
+
+.backlog-aging-footer {
+    display: flex;
+    gap: 2rem;
+    padding: 1rem 1.25rem;
+    color: var(--muted);
+}
+
+.backlog-aging-footer p {
+    margin: 0;
+}
+
+.backlog-aging-footer strong {
+    color: var(--text);
+}
+
 @media (max-width: 850px) {
     .metric-grid,
     .two-column-grid,
     .pm-metric-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .backlog-aging-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -694,6 +766,7 @@ code {
     .detail-description {
         grid-column: auto;
     }
+
     .pm-compliance-heading {
         align-items: flex-start;
         flex-direction: column;
@@ -701,5 +774,23 @@ code {
 
     .pm-metric-grid {
         grid-template-columns: 1fr;
+    }
+
+    .backlog-aging-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .backlog-aging-overview {
+        text-align: left;
+    }
+
+    .backlog-aging-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .backlog-aging-footer {
+        flex-direction: column;
+        gap: 0.5rem;
     }
 }

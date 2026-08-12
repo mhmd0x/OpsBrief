@@ -660,6 +660,59 @@ function renderBrief(brief, assetNames) {
     renderRecurring(brief.recurring_issues, timezone);
 }
 
+function renderBacklogAging(backlog) {
+    document.querySelector(
+        "#backlog-total-count",
+    ).textContent = backlog.total_backlog_count;
+
+    document.querySelector(
+        "#backlog-aging-summary",
+    ).textContent =
+        `${backlog.total_backlog_count} active work orders ` +
+        `grouped by age`;
+
+    document.querySelector(
+        "#backlog-average-age",
+    ).textContent = `${backlog.average_age_days} days`;
+
+    document.querySelector(
+        "#backlog-oldest-age",
+    ).textContent = `${backlog.oldest_age_days} days`;
+
+    const container = document.querySelector(
+        "#backlog-aging-buckets",
+    );
+    container.replaceChildren();
+
+    for (const [index, bucket] of backlog.buckets.entries()) {
+        const bucketElement =
+            document.createElement("article");
+        bucketElement.className =
+            "backlog-aging-bucket";
+
+        if (index === 2) {
+            bucketElement.classList.add(
+                "backlog-aging-bucket--warning",
+            );
+        }
+
+        if (index === 3) {
+            bucketElement.classList.add(
+                "backlog-aging-bucket--danger",
+            );
+        }
+
+        const label = document.createElement("span");
+        label.textContent = bucket.label;
+
+        const count = document.createElement("strong");
+        count.textContent = bucket.work_order_count;
+
+        bucketElement.append(label, count);
+        container.append(bucketElement);
+    }
+}
+
 async function loadBrief() {
     refreshButton.disabled = true;
     statusMessage.className = "status-message";
@@ -671,6 +724,7 @@ async function loadBrief() {
             assetsResponse,
             pmResponse,
             ytdPMResponse,
+            backlogResponse,
         ] = await Promise.all([
             fetch("/briefs/daily", {
                 headers: {
@@ -688,6 +742,11 @@ async function loadBrief() {
                 },
             }),
             fetch("/insights/ytd-pm-compliance", {
+                headers: {
+                    Accept: "application/json",
+                },
+            }),
+            fetch("/insights/work-order-backlog-aging", {
                 headers: {
                     Accept: "application/json",
                 },
@@ -719,16 +778,25 @@ async function loadBrief() {
             );
         }
 
+        if (!backlogResponse.ok) {
+            throw new Error(
+                `The backlog-aging API returned status ` +
+                `${backlogResponse.status}.`,
+            );
+        }
+
         const [
             brief,
             assets,
             pmCompliance,
             ytdPMCompliance,
+            backlogAging,
         ] = await Promise.all([
             briefResponse.json(),
             assetsResponse.json(),
             pmResponse.json(),
             ytdPMResponse.json(),
+            backlogResponse.json(),
         ]);
 
         const assetNames = new Map(
@@ -740,10 +808,12 @@ async function loadBrief() {
         renderYearToDatePMCompliance(
             ytdPMCompliance,
         );
+        renderBacklogAging(backlogAging);
 
         statusMessage.className =
             "status-message status-message--success";
-        statusMessage.textContent = "Operational data is current";
+        statusMessage.textContent =
+            "Operational data is current";
     } catch (error) {
         console.error(error);
         statusMessage.className =

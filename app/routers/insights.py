@@ -8,9 +8,11 @@ from app.config import APP_TIMEZONE
 from app.database import get_db
 from app.models import AssetModel, WorkOrderModel
 from app.schemas import (
+    BacklogAgeBucket,
     MonthlyPMCompliance,
     MonthlyPMTrendPoint,
     RecurringIssueSignal,
+    WorkOrderBacklogAging,
     YearToDatePMCompliance,
 )
 
@@ -329,4 +331,83 @@ def get_ytd_pm_compliance(
         completed_count=completed_count,
         completion_percentage=completion_percentage,
         months=months,
+    )
+
+@router.get(
+    "/work-order-backlog-aging",
+    response_model=WorkOrderBacklogAging,
+)
+def get_work_order_backlog_aging(
+    database: Session = Depends(get_db),
+) -> WorkOrderBacklogAging:
+    now = datetime.now(UTC)
+
+    statement = (
+        select(WorkOrderModel)
+        .where(
+            WorkOrderModel.status.not_in(
+                ["completed", "cancelled"]
+            )
+        )
+        .order_by(WorkOrderModel.created_at)
+    )
+
+    work_orders = list(
+        database.scalars(statement).all()
+    )
+
+    ages: list[int] = []
+
+    for work_order in work_orders:
+        created_at = work_order.created_at
+
+        if created_at.tzinfo is None:
+            created_at = created_at.replace(tzinfo=UTC)
+
+        age_days = max(
+            (now - created_at.astimezone(UTC)).days,
+            0,
+        )
+        ages.append(age_days)
+
+    bucket_definitions = [
+        ("0–7 days", 0, 7),
+        ("8–30 days", 8, 30),
+        ("31–60 days", 31, 60),
+        ("More than 60 days", 61, None),
+    ]
+
+    buckets = []
+
+    for label, minimum_days, maximum_days in bucket_definitions:
+        count = sum(
+            1
+            for age in ages
+            if age >= minimum_days
+            and (
+                maximum_days is None
+                or age <= maximum_days
+            )
+        )
+
+        buckets.append(
+            BacklogAgeBucket(
+                label=label,
+                minimum_days=minimum_days,
+                maximum_days=maximum_days,
+                work_order_count=count,
+            )
+        )
+
+    return WorkOrderBacklogAging(
+        generated_at=now,
+        timezone=str(APP_TIMEZONE),
+        total_backlog_count=len(work_orders),
+        average_age_days=(
+            round(sum(ages) / len(ages), 1)
+            if ages
+            else 0.0
+        ),
+        oldest_age_days=max(ages, default=0),
+        buckets=buckets,
     )
