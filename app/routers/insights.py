@@ -9,7 +9,9 @@ from app.database import get_db
 from app.models import AssetModel, WorkOrderModel
 from app.schemas import (
     MonthlyPMCompliance,
+    MonthlyPMTrendPoint,
     RecurringIssueSignal,
+    YearToDatePMCompliance,
 )
 
 
@@ -206,4 +208,125 @@ def get_monthly_pm_compliance(
         completed_work_orders=completed_work_orders,
         remaining_work_orders=remaining_work_orders,
         overdue_work_orders=overdue_work_orders,
+    )
+
+@router.get(
+    "/ytd-pm-compliance",
+    response_model=YearToDatePMCompliance,
+)
+def get_ytd_pm_compliance(
+    database: Session = Depends(get_db),
+) -> YearToDatePMCompliance:
+    local_now = datetime.now(APP_TIMEZONE)
+
+    local_year_start = local_now.replace(
+        month=1,
+        day=1,
+        hour=0,
+        minute=0,
+        second=0,
+        microsecond=0,
+    )
+
+    if local_now.month == 12:
+        local_next_month = local_year_start.replace(
+            year=local_now.year + 1,
+        )
+    else:
+        local_next_month = local_now.replace(
+            month=local_now.month + 1,
+            day=1,
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0,
+        )
+
+    utc_year_start = local_year_start.astimezone(UTC)
+    utc_next_month = local_next_month.astimezone(UTC)
+
+    statement = select(WorkOrderModel).where(
+        WorkOrderModel.maintenance_type == "preventive",
+        WorkOrderModel.due_date >= utc_year_start,
+        WorkOrderModel.due_date < utc_next_month,
+        WorkOrderModel.status != "cancelled",
+    )
+
+    work_orders = list(
+        database.scalars(statement).all()
+    )
+
+    monthly_counts = {
+        month_number: {
+            "planned": 0,
+            "completed": 0,
+        }
+        for month_number in range(
+            1,
+            local_now.month + 1,
+        )
+    }
+
+    for work_order in work_orders:
+        due_date = work_order.due_date
+
+        if due_date.tzinfo is None:
+            due_date = due_date.replace(tzinfo=UTC)
+
+        local_due_date = due_date.astimezone(
+            APP_TIMEZONE
+        )
+        month_counts = monthly_counts[
+            local_due_date.month
+        ]
+
+        month_counts["planned"] += 1
+
+        if work_order.status == "completed":
+            month_counts["completed"] += 1
+
+    months = []
+
+    for month_number, counts in monthly_counts.items():
+        planned_count = counts["planned"]
+        completed_count = counts["completed"]
+
+        completion_percentage = (
+            round(
+                completed_count / planned_count * 100,
+                1,
+            )
+            if planned_count
+            else 0.0
+        )
+
+        months.append(
+            MonthlyPMTrendPoint(
+                month=f"{local_now.year}-{month_number:02d}",
+                planned_count=planned_count,
+                completed_count=completed_count,
+                completion_percentage=completion_percentage,
+            )
+        )
+
+    planned_count = sum(
+        month.planned_count for month in months
+    )
+    completed_count = sum(
+        month.completed_count for month in months
+    )
+
+    completion_percentage = (
+        round(completed_count / planned_count * 100, 1)
+        if planned_count
+        else 0.0
+    )
+
+    return YearToDatePMCompliance(
+        year=local_now.year,
+        timezone=str(APP_TIMEZONE),
+        planned_count=planned_count,
+        completed_count=completed_count,
+        completion_percentage=completion_percentage,
+        months=months,
     )

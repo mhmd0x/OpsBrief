@@ -62,9 +62,13 @@ def seed_demo_data() -> None:
             microsecond=0,
         )
 
-        def pm_due_date(day: int) -> datetime:
+        def pm_due_date(
+            day: int,
+            month: int | None = None,
+        ) -> datetime:
             return month_start.replace(
-                day=day
+                month=month or month_start.month,
+                day=day,
             ).astimezone(UTC)
 
         work_orders = [
@@ -167,6 +171,57 @@ def seed_demo_data() -> None:
                 failure_code=None,
             ),
         ]
+
+        for month_number in range(1, local_now.month):
+            completed_target = (
+                1 if month_number % 3 == 0 else 2
+            )
+
+            for sequence in range(1, 3):
+                due_date = pm_due_date(
+                    day=10 + sequence * 5,
+                    month=month_number,
+                )
+                is_completed = (
+                    sequence <= completed_target
+                )
+                asset = assets[
+                    (month_number + sequence)
+                    % len(assets)
+                ]
+                month_name = due_date.astimezone(
+                    APP_TIMEZONE
+                ).strftime("%B")
+
+                work_orders.append(
+                    WorkOrderModel(
+                        asset_id=asset.id,
+                        title=(
+                            f"{month_name} scheduled PM "
+                            f"{sequence}"
+                        ),
+                        description=(
+                            "Historical preventive-maintenance "
+                            "plan record."
+                        ),
+                        priority=WorkOrderPriority.MEDIUM,
+                        maintenance_type=(
+                            MaintenanceType.PREVENTIVE
+                        ),
+                        status=(
+                            WorkOrderStatus.COMPLETED
+                            if is_completed
+                            else WorkOrderStatus.OPEN
+                        ),
+                        completed_at=(
+                            due_date + timedelta(hours=4)
+                            if is_completed
+                            else None
+                        ),
+                        due_date=due_date,
+                        failure_code=None,
+                    )
+                )
 
         database.add_all(work_orders)
         database.commit()

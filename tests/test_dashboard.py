@@ -31,6 +31,9 @@ def test_dashboard_page() -> None:
     assert 'data-pm-list="completed"' in response.text
     assert "pm-list-dialog" in response.text
     assert "pm-list-content" in response.text
+    assert "Year-to-date PM compliance" in response.text
+    assert "ytd-pm-percentage" in response.text
+    assert "ytd-pm-chart" in response.text
 
 
 def test_dashboard_stylesheet() -> None:
@@ -60,3 +63,8 @@ def test_dashboard_javascript() -> None:
     )
     assert "openPMWorkOrderList" in response.text
     assert "pmMetricButtons" in response.text
+    assert "renderYearToDatePMCompliance" in response.text
+    assert (
+        'fetch("/insights/ytd-pm-compliance"'
+        in response.text
+    )

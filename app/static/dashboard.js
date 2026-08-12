@@ -542,6 +542,88 @@ function renderMonthlyPMCompliance(compliance) {
     }
 }
 
+function renderYearToDatePMCompliance(compliance) {
+    document.querySelector("#ytd-pm-summary").textContent =
+        `${compliance.completed_count} of ` +
+        `${compliance.planned_count} planned PMs completed ` +
+        `in ${compliance.year}`;
+
+    document.querySelector(
+        "#ytd-pm-percentage",
+    ).textContent = `${compliance.completion_percentage}%`;
+
+    const container =
+        document.querySelector("#ytd-pm-chart");
+    container.replaceChildren();
+
+    if (compliance.months.length === 0) {
+        container.append(
+            createEmptyState(
+                "No year-to-date PM data is available.",
+            ),
+        );
+        return;
+    }
+
+    const maximumPlanned = Math.max(
+        ...compliance.months.map(
+            (month) => month.planned_count,
+        ),
+        1,
+    );
+
+    for (const month of compliance.months) {
+        const monthColumn = document.createElement("div");
+        monthColumn.className = "ytd-month";
+
+        const bars = document.createElement("div");
+        bars.className = "ytd-bars";
+
+        const plannedBar = document.createElement("div");
+        plannedBar.className =
+            "ytd-bar ytd-bar--planned";
+        plannedBar.style.height =
+            `${month.planned_count / maximumPlanned * 100}%`;
+        plannedBar.title =
+            `${month.planned_count} planned PMs`;
+
+        const completedBar = document.createElement("div");
+        completedBar.className =
+            "ytd-bar ytd-bar--completed";
+        completedBar.style.height =
+            `${month.completed_count / maximumPlanned * 100}%`;
+        completedBar.title =
+            `${month.completed_count} completed PMs`;
+
+        const monthLabel = document.createElement("span");
+        monthLabel.className = "ytd-month-label";
+        monthLabel.textContent = new Intl.DateTimeFormat(
+            "en",
+            {
+                month: "short",
+                timeZone: "UTC",
+            },
+        ).format(
+            new Date(`${month.month}-01T00:00:00Z`),
+        );
+
+        const monthValue = document.createElement("span");
+        monthValue.className = "ytd-month-value";
+        monthValue.textContent =
+            `${month.completed_count}/` +
+            `${month.planned_count} · ` +
+            `${month.completion_percentage}%`;
+
+        bars.append(plannedBar, completedBar);
+        monthColumn.append(
+            bars,
+            monthLabel,
+            monthValue,
+        );
+        container.append(monthColumn);
+    }
+}
+
 function renderBrief(brief, assetNames) {
     const { summary, timezone } = brief;
 
@@ -588,6 +670,7 @@ async function loadBrief() {
             briefResponse,
             assetsResponse,
             pmResponse,
+            ytdPMResponse,
         ] = await Promise.all([
             fetch("/briefs/daily", {
                 headers: {
@@ -600,6 +683,11 @@ async function loadBrief() {
                 },
             }),
             fetch("/insights/monthly-pm-compliance", {
+                headers: {
+                    Accept: "application/json",
+                },
+            }),
+            fetch("/insights/ytd-pm-compliance", {
                 headers: {
                     Accept: "application/json",
                 },
@@ -624,14 +712,23 @@ async function loadBrief() {
             );
         }
 
+        if (!ytdPMResponse.ok) {
+            throw new Error(
+                `The YTD PM API returned status ` +
+                `${ytdPMResponse.status}.`,
+            );
+        }
+
         const [
             brief,
             assets,
             pmCompliance,
+            ytdPMCompliance,
         ] = await Promise.all([
             briefResponse.json(),
             assetsResponse.json(),
             pmResponse.json(),
+            ytdPMResponse.json(),
         ]);
 
         const assetNames = new Map(
@@ -640,6 +737,9 @@ async function loadBrief() {
 
         renderBrief(brief, assetNames);
         renderMonthlyPMCompliance(pmCompliance);
+        renderYearToDatePMCompliance(
+            ytdPMCompliance,
+        );
 
         statusMessage.className =
             "status-message status-message--success";

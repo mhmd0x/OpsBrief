@@ -159,6 +159,46 @@
             </div>
         </section>
 
+        <section
+            class="dashboard-panel"
+            aria-labelledby="ytd-pm-title"
+        >
+            <div class="panel-heading ytd-pm-heading">
+                <div>
+                    <p class="eyebrow">Performance trend</p>
+                    <h2 id="ytd-pm-title">
+                        Year-to-date PM compliance
+                    </h2>
+                    <p id="ytd-pm-summary">
+                        Loading year-to-date performance…
+                    </p>
+                </div>
+
+                <strong id="ytd-pm-percentage">—%</strong>
+            </div>
+
+            <div class="ytd-chart-legend">
+                <span class="legend-item">
+                    <span class="legend-swatch legend-swatch--planned"></span>
+                    Planned
+                </span>
+                <span class="legend-item">
+                    <span class="legend-swatch legend-swatch--completed"></span>
+                    Completed
+                </span>
+            </div>
+
+            <div
+                id="ytd-pm-chart"
+                class="ytd-pm-chart"
+                aria-label="Planned versus completed PMs by month"
+            >
+                <p class="empty-state">
+                    Loading monthly PM trend…
+                </p>
+            </div>
+        </section>
+
         <section class="dashboard-panel">
             <div class="panel-heading">
                 <div>

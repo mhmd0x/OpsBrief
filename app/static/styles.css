@@ -551,6 +551,101 @@ footer {
     text-decoration-color: var(--accent);
 }
 
+.ytd-pm-heading {
+    align-items: flex-start;
+}
+
+.ytd-pm-heading #ytd-pm-summary {
+    margin: 0.35rem 0 0;
+    color: var(--muted);
+}
+
+#ytd-pm-percentage {
+    color: var(--info);
+    font-size: 2rem;
+}
+
+.ytd-chart-legend {
+    display: flex;
+    gap: 1.25rem;
+    padding: 1rem 1.25rem 0;
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.legend-swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+
+.legend-swatch--planned {
+    background: var(--accent);
+}
+
+.legend-swatch--completed {
+    background: var(--info);
+}
+
+.ytd-pm-chart {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(80px, 1fr)
+    );
+    gap: 1rem;
+    min-height: 260px;
+    padding: 1.25rem;
+}
+
+.ytd-month {
+    display: grid;
+    grid-template-rows: 1fr auto auto;
+    gap: 0.6rem;
+    min-width: 0;
+    text-align: center;
+}
+
+.ytd-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: 180px;
+    border-bottom: 1px solid var(--border);
+}
+
+.ytd-bar {
+    width: min(26px, 35%);
+    min-height: 2px;
+    border-radius: 5px 5px 0 0;
+}
+
+.ytd-bar--planned {
+    background: var(--accent);
+}
+
+.ytd-bar--completed {
+    background: var(--info);
+}
+
+.ytd-month-label {
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.ytd-month-value {
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
 footer p {
     margin: 0;
 }

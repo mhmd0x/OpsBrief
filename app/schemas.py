@@ -168,3 +168,19 @@ class MonthlyPMCompliance(BaseModel):
     completed_work_orders: list[WorkOrder]
     remaining_work_orders: list[WorkOrder]
     overdue_work_orders: list[WorkOrder]
+
+
+class MonthlyPMTrendPoint(BaseModel):
+    month: str
+    planned_count: int
+    completed_count: int
+    completion_percentage: float
+
+
+class YearToDatePMCompliance(BaseModel):
+    year: int
+    timezone: str
+    planned_count: int
+    completed_count: int
+    completion_percentage: float
+    months: list[MonthlyPMTrendPoint]
