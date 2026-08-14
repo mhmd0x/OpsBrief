@@ -127,6 +127,18 @@ Create the local environment file:
 cp .env.example .env
 ```
 
+The example file contains development-only database credentials. Before using
+OpsBrief in a shared or production environment, replace `POSTGRES_PASSWORD`
+with a unique secret and replace `OPSBRIEF_API_KEY` with a generated private
+key. Docker Compose requires `POSTGRES_PASSWORD` to be supplied explicitly;
+there is no built-in password fallback. Because Compose embeds the password in
+`DATABASE_URL`, use a URL-safe password containing only letters, numbers,
+`-`, `_`, `.`, or `~`. Generate one with:
+
+```bash
+python -c "import secrets; print(secrets.token_urlsafe(32))"
+```
+
 Build and start the API and PostgreSQL:
 
 ```bash

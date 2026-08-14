@@ -3,7 +3,7 @@ services:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-opsbrief}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-opsbrief_dev_password}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
       POSTGRES_DB: ${POSTGRES_DB:-opsbrief}
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -19,7 +19,7 @@ services:
     build:
       context: .
     environment:
-      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-opsbrief}:${POSTGRES_PASSWORD:-opsbrief_dev_password}@database:5432/${POSTGRES_DB:-opsbrief}
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-opsbrief}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}@database:5432/${POSTGRES_DB:-opsbrief}
       APP_TIMEZONE: ${APP_TIMEZONE:-Asia/Riyadh}
       OPSBRIEF_API_KEY: "${OPSBRIEF_API_KEY:?OPSBRIEF_API_KEY must be set}"
     ports:
