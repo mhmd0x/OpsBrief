@@ -91,7 +91,6 @@ def update_asset(
 
     update_fields = asset_data.model_dump(
         exclude_unset=True,
-        exclude_none=True,
     )
 
     for field, value in update_fields.items():

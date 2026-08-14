@@ -146,6 +146,101 @@ def test_delete_unknown_asset() -> None:
     assert response.json() == {"detail": "Asset not found"}
 
 
+def test_clear_asset_location_with_null() -> None:
+    create_response = client.post(
+        "/assets",
+        json={
+            "name": "Boiler Feed Pump",
+            "asset_tag": "PUMP-LOC-001",
+            "location": "Boiler House",
+        },
+    )
+
+    created_asset = create_response.json()
+    asset_id = created_asset["id"]
+
+    response = client.patch(
+        f"/assets/{asset_id}",
+        json={"location": None},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["location"] is None
+
+    get_response = client.get(f"/assets/{asset_id}")
+    assert get_response.json()["location"] is None
+
+
+def test_update_work_order_clears_failure_code_with_null() -> None:
+    asset_response = client.post(
+        "/assets",
+        json={
+            "name": "Seal Test Pump",
+            "asset_tag": "PUMP-FC-001",
+            "location": "Pump Room",
+        },
+    )
+    asset_id = asset_response.json()["id"]
+
+    create_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset_id,
+            "title": "Inspect seal leak",
+            "failure_code": "SEAL_LEAK",
+            "priority": "medium",
+            "due_date": "2026-08-18T08:00:00Z",
+        },
+    )
+    work_order_id = create_response.json()["id"]
+
+    response = client.patch(
+        f"/work-orders/{work_order_id}",
+        json={"failure_code": None},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["failure_code"] is None
+
+    get_response = client.get(f"/work-orders/{work_order_id}")
+    assert get_response.json()["failure_code"] is None
+
+
+def test_update_work_order_keeps_fields_when_omitted() -> None:
+    asset_response = client.post(
+        "/assets",
+        json={
+            "name": "Omit Test Pump",
+            "asset_tag": "PUMP-OMIT-001",
+            "location": "Pump Room",
+        },
+    )
+    asset_id = asset_response.json()["id"]
+
+    create_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset_id,
+            "title": "Original title",
+            "failure_code": "ORIGINAL_CODE",
+            "priority": "medium",
+            "due_date": "2026-08-18T08:00:00Z",
+        },
+    )
+    work_order_id = create_response.json()["id"]
+
+    response = client.patch(
+        f"/work-orders/{work_order_id}",
+        json={"title": "Updated title"},
+    )
+
+    assert response.status_code == 200
+    updated = response.json()
+    assert updated["title"] == "Updated title"
+    assert updated["failure_code"] == "ORIGINAL_CODE"
+    assert updated["priority"] == "medium"
+
+
 def test_create_asset_with_duplicate_tag() -> None:
     asset_data = {
         "name": "Primary Compressor",

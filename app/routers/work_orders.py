@@ -253,7 +253,6 @@ def update_work_order(
 
     update_fields = work_order_data.model_dump(
         exclude_unset=True,
-        exclude_none=True,
     )
 
     if "due_date" in update_fields:

@@ -581,6 +581,13 @@ def test_filter_work_orders() -> None:
         "&priority=critical"
     )
 
+    assert response.status_code == 200
+    work_orders = response.json()
+    assert len(work_orders) == 1
+    assert work_orders[0]["id"] == critical_work_order["id"]
+    assert work_orders[0]["priority"] == "critical"
+    assert work_orders[0]["status"] == "in_progress"
+
 
 def test_paginate_work_orders() -> None:
     asset = create_test_asset()
