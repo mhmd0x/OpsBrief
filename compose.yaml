@@ -5,8 +5,6 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-opsbrief}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-opsbrief_dev_password}
       POSTGRES_DB: ${POSTGRES_DB:-opsbrief}
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:

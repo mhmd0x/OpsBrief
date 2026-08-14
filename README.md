@@ -204,17 +204,10 @@ On Windows PowerShell, use:
 Copy-Item .env.example .env
 ```
 
-Start PostgreSQL:
-
-```bash
-docker compose up -d database
-```
-
-Confirm the database is healthy:
-
-```bash
-docker compose ps
-```
+For host-based development, make PostgreSQL available at `localhost:5432`.
+The PostgreSQL service in Docker Compose is intentionally internal-only; use
+the full-stack Docker instructions above when you want the API and database to
+run entirely in containers.
 
 Apply the database migrations:
 
@@ -260,13 +253,16 @@ The tests use a separate in-memory SQLite database and do not modify development
 
 ## Stopping the Development Database
 
-Stop the PostgreSQL container:
+For the containerized development environment, stop the PostgreSQL container:
 
 ```bash
 docker compose down
 ```
 
 Avoid using `docker compose down -v` unless you intentionally want to delete the local PostgreSQL data.
+
+For host-based development, stop PostgreSQL using the service manager for the
+PostgreSQL installation you provided at `localhost:5432`.
 
 ## Project Structure
 
