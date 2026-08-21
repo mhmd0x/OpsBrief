@@ -660,6 +660,79 @@ function renderBrief(brief, assetNames) {
     renderRecurring(brief.recurring_issues, timezone);
 }
 
+function renderAssetReliabilityRanking(rankings) {
+    const tableBody = document.querySelector(
+        "#asset-reliability-body",
+    );
+    tableBody.replaceChildren();
+
+    if (rankings.length === 0) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+
+        cell.colSpan = 8;
+        cell.textContent = "No assets are available.";
+        row.append(cell);
+        tableBody.append(row);
+        return;
+    }
+
+    for (const [index, asset] of rankings.entries()) {
+        const row = document.createElement("tr");
+
+        const rankCell = document.createElement("td");
+        rankCell.className = "reliability-rank";
+        rankCell.textContent = `#${index + 1}`;
+
+        const assetCell = document.createElement("td");
+        assetCell.textContent = asset.asset_name;
+
+        const tagCell = document.createElement("td");
+        tagCell.textContent = asset.asset_tag;
+
+        const activeCell = document.createElement("td");
+        activeCell.textContent =
+            asset.active_work_order_count;
+
+        const overdueCell = document.createElement("td");
+        overdueCell.textContent =
+            asset.overdue_work_order_count;
+
+        const highPriorityCell =
+            document.createElement("td");
+        highPriorityCell.textContent =
+            asset.high_priority_work_order_count;
+
+        const recurringCell = document.createElement("td");
+        recurringCell.textContent =
+            asset.recurring_issue_count;
+
+        const scoreCell = document.createElement("td");
+        const score = document.createElement("span");
+        score.className = "risk-score";
+        score.textContent = asset.risk_score;
+
+        if (asset.risk_score >= 12) {
+            score.classList.add("risk-score--high");
+        } else if (asset.risk_score >= 5) {
+            score.classList.add("risk-score--medium");
+        }
+
+        scoreCell.append(score);
+        row.append(
+            rankCell,
+            assetCell,
+            tagCell,
+            activeCell,
+            overdueCell,
+            highPriorityCell,
+            recurringCell,
+            scoreCell,
+        );
+        tableBody.append(row);
+    }
+}
+
 function renderBacklogAging(backlog) {
     document.querySelector(
         "#backlog-total-count",
@@ -725,6 +798,7 @@ async function loadBrief() {
             pmResponse,
             ytdPMResponse,
             backlogResponse,
+            reliabilityResponse,
         ] = await Promise.all([
             fetch("/briefs/daily", {
                 headers: {
@@ -747,6 +821,11 @@ async function loadBrief() {
                 },
             }),
             fetch("/insights/work-order-backlog-aging", {
+                headers: {
+                    Accept: "application/json",
+                },
+            }),
+            fetch("/insights/asset-reliability-ranking", {
                 headers: {
                     Accept: "application/json",
                 },
@@ -784,6 +863,12 @@ async function loadBrief() {
                 `${backlogResponse.status}.`,
             );
         }
+        if (!reliabilityResponse.ok) {
+            throw new Error(
+                `The asset-reliability API returned status ` +
+                `${reliabilityResponse.status}.`,
+            );
+        }
 
         const [
             brief,
@@ -791,12 +876,14 @@ async function loadBrief() {
             pmCompliance,
             ytdPMCompliance,
             backlogAging,
+            reliabilityRankings,
         ] = await Promise.all([
             briefResponse.json(),
             assetsResponse.json(),
             pmResponse.json(),
             ytdPMResponse.json(),
             backlogResponse.json(),
+            reliabilityResponse.json(),
         ]);
 
         const assetNames = new Map(
@@ -809,6 +896,9 @@ async function loadBrief() {
             ytdPMCompliance,
         );
         renderBacklogAging(backlogAging);
+        renderAssetReliabilityRanking(
+            reliabilityRankings,
+        );
 
         statusMessage.className =
             "status-message status-message--success";

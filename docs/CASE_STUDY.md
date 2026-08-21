@@ -44,6 +44,9 @@ The application converts work-order records into operational signals:
 - High-attention work orders
 - Recurring failures by asset and failure code
 - Monthly preventive-maintenance compliance
+- Year-to-date preventive-maintenance compliance trends
+- Work-order backlog aging analysis
+- Asset reliability ranking based on active, overdue, high-priority, and recurring work-order signals
 - Required calendar-day completion pace to reach the monthly target
 
 Supervisors can open the planned, completed, remaining, and overdue PM totals to inspect the exact work orders behind each KPI.
@@ -74,7 +77,7 @@ PostgreSQL
 
 ## Testing and Quality
 
-OpsBrief includes 39 automated tests covering:
+OpsBrief includes 42 automated tests covering:
 
 - Health checks
 - Asset creation, retrieval, updating, and deletion
@@ -87,6 +90,9 @@ OpsBrief includes 39 automated tests covering:
 - API-key authorization
 - Dashboard and static-file delivery
 - Monthly PM compliance, plan-status, and recovery-pace calculations
+- Year-to-date PM compliance calculations
+- Work-order backlog aging calculations
+- Asset reliability ranking and risk-score calculations
 
 Tests use an isolated in-memory SQLite database, preventing test data from modifying the PostgreSQL development database.
 

@@ -242,6 +242,48 @@
             </div>
         </section>
 
+        <section
+            class="dashboard-panel"
+            aria-labelledby="asset-reliability-title"
+        >
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">Asset risk</p>
+                    <h2 id="asset-reliability-title">
+                        Asset reliability ranking
+                    </h2>
+                    <p class="panel-description">
+                        Ranked using active, overdue, high-priority,
+                        and recurring work-order signals.
+                    </p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Asset</th>
+                            <th>Tag</th>
+                            <th>Active</th>
+                            <th>Overdue</th>
+                            <th>High priority</th>
+                            <th>Recurring</th>
+                            <th>Risk score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="asset-reliability-body">
+                        <tr>
+                            <td colspan="8">
+                                Loading asset reliability ranking…
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
         <section class="dashboard-panel">
             <div class="panel-heading">
                 <div>
