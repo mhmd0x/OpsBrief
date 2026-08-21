@@ -4,7 +4,7 @@
 
 OpsBrief is a maintenance decision-support API that turns asset and work-order data into operational briefs, risk signals, and recurring-issue insights.
 
-![OpsBrief Daily Operations Brief dashboard](docs/images/opsbrief-dashboard.png)
+![OpsBrief Maintenance Manager dashboard](docs/images/opsbrief-manager-view.png)
 
 [Read the full OpsBrief case study](docs/CASE_STUDY.md)
 
@@ -45,6 +45,7 @@ OpsBrief is being developed to surface what requires attention instead of only d
 - Year-to-date preventive-maintenance compliance trend
 - Work-order backlog aging analysis
 - Asset reliability ranking based on operational risk signals
+- Role-focused dashboard views for maintenance managers, supervisors, and reliability engineers
 
 ## API Endpoints
 
@@ -285,9 +286,11 @@ OpsBrief/
 │   └── versions/
 ├── docs/
 │   ├── images/
-│   │   ├── opsbrief-dashboard.png
+│   │   ├── opsbrief-manager-view.png
 │   │   ├── opsbrief-pm-work-orders.png
 │   │   ├── opsbrief-recurring-issue-details.png
+│   │   ├── opsbrief-reliability-view.png
+│   │   ├── opsbrief-supervisor-view.png
 │   │   └── opsbrief-work-order-details.png
 │   └── CASE_STUDY.md
 ├── app/
@@ -335,9 +338,10 @@ OpsBrief/
 
 The next milestones are:
 
-- Role-specific dashboard views and operational insights
-- Role-based user authentication
+- Authenticated user accounts with backend-enforced role authorization
+- Technician work assignment and personal task views
 - Production deployment and monitoring
+
 
 
 ## Status
