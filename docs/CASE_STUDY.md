@@ -48,6 +48,7 @@ The application converts work-order records into operational signals:
 - Work-order backlog aging analysis
 - Asset reliability ranking based on active, overdue, high-priority, and recurring work-order signals
 - Required calendar-day completion pace to reach the monthly target
+- Role-focused dashboard views for maintenance managers, supervisors, and reliability engineers
 
 Supervisors can open the planned, completed, remaining, and overdue PM totals to inspect the exact work orders behind each KPI.
 
@@ -58,6 +59,28 @@ Supervisors can open the planned, completed, remaining, and overdue PM totals to
 ![OpsBrief recurring-issue reliability dialog](images/opsbrief-recurring-issue-details.png)
 
 These signals are presented together in the OpsBrief dashboard, helping supervisors quickly identify what requires attention and inspect the work orders behind each KPI.
+
+## Role-Focused Dashboard Views
+
+OpsBrief provides focused dashboard views for different maintenance responsibilities. These views prioritize relevant information but do not yet enforce security authorization.
+
+### Maintenance Manager
+
+Focuses on PM compliance, year-to-date performance, backlog health, and asset risk.
+
+![Maintenance Manager dashboard](images/opsbrief-manager-view.png)
+
+### Maintenance Supervisor
+
+Focuses on immediate work priorities, overdue work, upcoming work, and backlog execution.
+
+![Maintenance Supervisor dashboard](images/opsbrief-supervisor-view.png)
+
+### Reliability Engineer
+
+Focuses on asset reliability ranking, recurring failures, high-attention work, and equipment risk.
+
+![Reliability Engineer dashboard](images/opsbrief-reliability-view.png)
 
 ## Architecture
 

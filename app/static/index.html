@@ -21,9 +21,26 @@
             <p class="subtitle">Daily Operations Brief</p>
         </div>
 
-        <button id="refresh-button" type="button">
-            Refresh brief
-        </button>
+        <div class="header-actions">
+            <label class="role-selector">
+                <span>Dashboard view</span>
+                <select id="role-selector">
+                    <option value="supervisor">
+                        Maintenance Supervisor
+                    </option>
+                    <option value="manager">
+                        Maintenance Manager
+                    </option>
+                    <option value="reliability">
+                        Reliability Engineer
+                    </option>
+                </select>
+            </label>
+
+            <button id="refresh-button" type="button">
+                Refresh brief
+            </button>
+        </div>
     </header>
 
     <main>
@@ -72,6 +89,7 @@
 
         <section
             class="dashboard-panel pm-compliance-panel"
+            data-dashboard-roles="manager supervisor"
             aria-labelledby="pm-compliance-title"
         >
             <div class="panel-heading pm-compliance-heading">
@@ -161,6 +179,7 @@
 
         <section
             class="dashboard-panel"
+            data-dashboard-roles="manager"
             aria-labelledby="ytd-pm-title"
         >
             <div class="panel-heading ytd-pm-heading">
@@ -201,6 +220,7 @@
 
         <section
             class="dashboard-panel"
+            data-dashboard-roles="manager supervisor"
             aria-labelledby="backlog-aging-title"
         >
             <div class="panel-heading backlog-aging-heading">
@@ -244,6 +264,7 @@
 
         <section
             class="dashboard-panel"
+            data-dashboard-roles="manager reliability"
             aria-labelledby="asset-reliability-title"
         >
             <div class="panel-heading">
@@ -284,7 +305,10 @@
             </div>
         </section>
 
-        <section class="dashboard-panel">
+        <section
+            class="dashboard-panel"
+            data-dashboard-roles="supervisor reliability"
+        >
             <div class="panel-heading">
                 <div>
                     <p class="eyebrow">Immediate action</p>
@@ -336,7 +360,10 @@
         </section>
 
         <div class="two-column-grid">
-            <section class="dashboard-panel">
+            <section
+                class="dashboard-panel"
+                data-dashboard-roles="supervisor reliability"
+            >
                 <div class="panel-heading">
                     <div>
                         <p class="eyebrow">Schedule risk</p>
@@ -349,7 +376,10 @@
                 </div>
             </section>
 
-            <section class="dashboard-panel">
+            <section
+                class="dashboard-panel"
+                data-dashboard-roles="supervisor"
+            >
                 <div class="panel-heading">
                     <div>
                         <p class="eyebrow">Schedule outlook</p>
@@ -362,7 +392,10 @@
                 </div>
             </section>
 
-            <section class="dashboard-panel">
+            <section
+                class="dashboard-panel"
+                data-dashboard-roles="manager reliability"
+            >
                 <div class="panel-heading">
                     <div>
                         <p class="eyebrow">Reliability signal</p>

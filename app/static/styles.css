@@ -66,6 +66,35 @@ footer {
     border-bottom: 1px solid var(--border);
 }
 
+.header-actions {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+}
+
+.role-selector {
+    display: grid;
+    gap: 0.4rem;
+}
+
+.role-selector span {
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.role-selector select {
+    min-width: 13rem;
+    border: 1px solid var(--border);
+    border-radius: 0.65rem;
+    padding: 0.75rem;
+    background: var(--background);
+    color: var(--text);
+    font: inherit;
+}
+
 h1,
 h2,
 p {
@@ -769,6 +798,17 @@ code {
     .brief-heading {
         align-items: flex-start;
         flex-direction: column;
+    }
+
+    .header-actions {
+        width: 100%;
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .role-selector select,
+    #refresh-button {
+        width: 100%;
     }
 
     .status-message {

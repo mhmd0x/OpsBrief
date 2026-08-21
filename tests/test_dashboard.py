@@ -39,6 +39,11 @@ def test_dashboard_page() -> None:
     assert "backlog-aging-buckets" in response.text
     assert "Asset reliability ranking" in response.text
     assert "asset-reliability-body" in response.text
+    assert 'id="role-selector"' in response.text
+    assert 'value="supervisor"' in response.text
+    assert 'value="manager"' in response.text
+    assert 'value="reliability"' in response.text
+    assert "data-dashboard-roles" in response.text
 
 
 def test_dashboard_stylesheet() -> None:
@@ -46,6 +51,8 @@ def test_dashboard_stylesheet() -> None:
 
     assert response.status_code == 200
     assert "text/css" in response.headers["content-type"]
+    assert ".header-actions" in response.text
+    assert ".role-selector" in response.text
 
 
 def test_dashboard_javascript() -> None:
@@ -83,3 +90,6 @@ def test_dashboard_javascript() -> None:
         'fetch("/insights/asset-reliability-ranking"'
         in response.text
     )
+    assert "applyDashboardRole" in response.text
+    assert "dashboardRoleSections" in response.text
+    assert "roleSelector.addEventListener" in response.text

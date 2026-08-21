@@ -18,6 +18,12 @@ const pmListDialog =
     document.querySelector("#pm-list-dialog");
 const closePMListDialogButton =
     document.querySelector("#close-pm-list-dialog");
+const roleSelector =
+    document.querySelector("#role-selector");
+const dashboardRoleSections =
+    document.querySelectorAll(
+        "[data-dashboard-roles]",
+    );
 const pmMetricButtons =
     document.querySelectorAll("[data-pm-list]");
 
@@ -786,6 +792,28 @@ function renderBacklogAging(backlog) {
     }
 }
 
+function applyDashboardRole() {
+    const selectedRole = roleSelector.value;
+
+    for (const section of dashboardRoleSections) {
+        const allowedRoles =
+            section.dataset.dashboardRoles.split(" ");
+
+        section.hidden = !allowedRoles.includes(
+            selectedRole,
+        );
+    }
+
+    const roleHeadings = {
+        supervisor: "Today’s operational priorities",
+        manager: "Maintenance performance overview",
+        reliability: "Asset reliability priorities",
+    };
+
+    document.querySelector("#brief-title").textContent =
+        roleHeadings[selectedRole];
+}
+
 async function loadBrief() {
     refreshButton.disabled = true;
     statusMessage.className = "status-message";
@@ -938,5 +966,14 @@ priorityFilter.addEventListener(
     "change",
     applyHighAttentionFilters,
 );
-refreshButton.addEventListener("click", loadBrief);
+roleSelector.addEventListener(
+    "change",
+    applyDashboardRole,
+);
+refreshButton.addEventListener(
+    "click",
+    loadBrief,
+);
+
+applyDashboardRole();
 loadBrief();
