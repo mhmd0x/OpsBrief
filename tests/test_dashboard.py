@@ -37,6 +37,8 @@ def test_dashboard_page() -> None:
     assert "Work-order backlog aging" in response.text
     assert "backlog-total-count" in response.text
     assert "backlog-aging-buckets" in response.text
+    assert "Asset reliability ranking" in response.text
+    assert "asset-reliability-body" in response.text
 
 
 def test_dashboard_stylesheet() -> None:
@@ -74,5 +76,10 @@ def test_dashboard_javascript() -> None:
     assert "renderBacklogAging" in response.text
     assert (
         'fetch("/insights/work-order-backlog-aging"'
+        in response.text
+    )
+    assert "renderAssetReliabilityRanking" in response.text
+    assert (
+        'fetch("/insights/asset-reliability-ranking"'
         in response.text
     )

@@ -200,3 +200,14 @@ class WorkOrderBacklogAging(BaseModel):
     average_age_days: float
     oldest_age_days: int
     buckets: list[BacklogAgeBucket]
+
+
+class AssetReliabilityRanking(BaseModel):
+    asset_id: UUID
+    asset_name: str
+    asset_tag: str
+    active_work_order_count: int
+    overdue_work_order_count: int
+    high_priority_work_order_count: int
+    recurring_issue_count: int
+    risk_score: int

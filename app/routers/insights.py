@@ -8,6 +8,7 @@ from app.config import APP_TIMEZONE
 from app.database import get_db
 from app.models import AssetModel, WorkOrderModel
 from app.schemas import (
+    AssetReliabilityRanking,
     BacklogAgeBucket,
     MonthlyPMCompliance,
     MonthlyPMTrendPoint,
@@ -410,4 +411,95 @@ def get_work_order_backlog_aging(
         ),
         oldest_age_days=max(ages, default=0),
         buckets=buckets,
+    )
+
+
+@router.get(
+    "/asset-reliability-ranking",
+    response_model=list[AssetReliabilityRanking],
+)
+def list_asset_reliability_ranking(
+    database: Session = Depends(get_db),
+) -> list[AssetReliabilityRanking]:
+    now = datetime.now(UTC)
+
+    assets = list(
+        database.scalars(
+            select(AssetModel).order_by(AssetModel.name)
+        ).all()
+    )
+    active_work_orders = list(
+        database.scalars(
+            select(WorkOrderModel).where(
+                WorkOrderModel.status.not_in(
+                    ["completed", "cancelled"]
+                )
+            )
+        ).all()
+    )
+    recurring_issues = list_recurring_issues(database)
+
+    rankings = []
+
+    for asset in assets:
+        asset_work_orders = [
+            work_order
+            for work_order in active_work_orders
+            if work_order.asset_id == asset.id
+        ]
+
+        overdue_count = sum(
+            1
+            for work_order in asset_work_orders
+            if (
+                work_order.due_date.replace(
+                    tzinfo=UTC
+                )
+                if work_order.due_date.tzinfo is None
+                else work_order.due_date.astimezone(UTC)
+            )
+            < now
+        )
+
+        high_priority_count = sum(
+            1
+            for work_order in asset_work_orders
+            if work_order.priority in ["high", "critical"]
+        )
+
+        recurring_count = sum(
+            1
+            for issue in recurring_issues
+            if issue.asset_id == asset.id
+        )
+
+        active_count = len(asset_work_orders)
+        risk_score = (
+            active_count
+            + overdue_count * 3
+            + high_priority_count * 2
+            + recurring_count * 4
+        )
+
+        rankings.append(
+            AssetReliabilityRanking(
+                asset_id=asset.id,
+                asset_name=asset.name,
+                asset_tag=asset.asset_tag,
+                active_work_order_count=active_count,
+                overdue_work_order_count=overdue_count,
+                high_priority_work_order_count=(
+                    high_priority_count
+                ),
+                recurring_issue_count=recurring_count,
+                risk_score=risk_score,
+            )
+        )
+
+    return sorted(
+        rankings,
+        key=lambda ranking: (
+            -ranking.risk_score,
+            ranking.asset_name,
+        ),
     )

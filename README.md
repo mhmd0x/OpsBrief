@@ -42,6 +42,9 @@ OpsBrief is being developed to surface what requires attention instead of only d
 - Interactive work-order detail dialog
 - Interactive recurring-issue reliability details
 - Interactive planned, completed, remaining, and overdue PM drill-downs
+- Year-to-date preventive-maintenance compliance trend
+- Work-order backlog aging analysis
+- Asset reliability ranking based on operational risk signals
 
 ## API Endpoints
 
@@ -65,6 +68,9 @@ OpsBrief is being developed to surface what requires attention instead of only d
 | `DELETE` | `/work-orders/{work_order_id}` | Delete a work order |
 | `GET` | `/insights/recurring-issues` | Detect recurring asset failures |
 | `GET` | `/insights/monthly-pm-compliance` | Measure monthly PM completion, plan status, and required daily pace |
+| `GET` | `/insights/ytd-pm-compliance` | Measure year-to-date PM compliance by month |
+| `GET` | `/insights/work-order-backlog-aging` | Group active work orders into backlog age buckets |
+| `GET` | `/insights/asset-reliability-ranking` | Rank assets using active, overdue, high-priority, and recurring work-order signals |
 | `GET` | `/briefs/daily` | Generate the Daily Operations Brief |
 
 Interactive API documentation is available at `/docs` while the application is running.
@@ -305,7 +311,9 @@ OpsBrief/
 │   └── seed.py
 ├── tests/
 │   ├── conftest.py
+│   ├── test_asset_reliability.py
 │   ├── test_assets.py
+│   ├── test_backlog_aging.py
 │   ├── test_dashboard.py
 │   ├── test_due_soon.py
 │   ├── test_health.py
@@ -327,9 +335,10 @@ OpsBrief/
 
 The next milestones are:
 
-- Additional operational risk signals
+- Role-specific dashboard views and operational insights
 - Role-based user authentication
 - Production deployment and monitoring
+
 
 ## Status
 

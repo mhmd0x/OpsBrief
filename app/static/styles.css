@@ -722,6 +722,36 @@ code {
     color: var(--text);
 }
 
+.panel-description {
+    margin: 0.35rem 0 0;
+    color: var(--muted);
+}
+
+.reliability-rank {
+    color: var(--muted);
+    font-weight: 800;
+}
+
+.risk-score {
+    display: inline-block;
+    min-width: 2.5rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.25rem 0.6rem;
+    text-align: center;
+    font-weight: 800;
+}
+
+.risk-score--medium {
+    border-color: var(--warning);
+    color: var(--warning);
+}
+
+.risk-score--high {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
 @media (max-width: 850px) {
     .metric-grid,
     .two-column-grid,
