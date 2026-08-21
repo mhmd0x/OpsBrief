@@ -171,6 +171,31 @@ def test_clear_asset_location_with_null() -> None:
     assert get_response.json()["location"] is None
 
 
+def test_update_asset_rejects_null_for_non_nullable_fields() -> None:
+    create_response = client.post(
+        "/assets",
+        json={
+            "name": "Null Validation Pump",
+            "asset_tag": "PUMP-NULL-001",
+            "location": "Pump Room",
+        },
+    )
+    created_asset = create_response.json()
+    asset_id = created_asset["id"]
+
+    for field in ("name", "asset_tag"):
+        response = client.patch(
+            f"/assets/{asset_id}",
+            json={field: None},
+        )
+
+        assert response.status_code == 422
+
+    get_response = client.get(f"/assets/{asset_id}")
+    assert get_response.status_code == 200
+    assert get_response.json() == created_asset
+
+
 def test_update_work_order_clears_failure_code_with_null() -> None:
     asset_response = client.post(
         "/assets",

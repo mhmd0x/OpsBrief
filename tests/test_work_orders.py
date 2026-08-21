@@ -154,6 +154,66 @@ def test_update_existing_work_order() -> None:
     assert updated_work_order["id"] == created_work_order["id"]
 
 
+def test_update_work_order_rejects_null_for_non_nullable_fields() -> None:
+    asset = create_test_asset()
+    create_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Validate null updates",
+            "priority": "high",
+            "maintenance_type": "preventive",
+            "due_date": "2026-08-18T08:00:00Z",
+        },
+    )
+    created_work_order = create_response.json()
+    work_order_id = created_work_order["id"]
+
+    for field in (
+        "title",
+        "priority",
+        "maintenance_type",
+        "status",
+        "due_date",
+    ):
+        response = client.patch(
+            f"/work-orders/{work_order_id}",
+            json={field: None},
+        )
+
+        assert response.status_code == 422
+
+    get_response = client.get(f"/work-orders/{work_order_id}")
+    assert get_response.status_code == 200
+    assert get_response.json() == created_work_order
+
+
+def test_update_work_order_clears_description_with_null() -> None:
+    asset = create_test_asset()
+    create_response = client.post(
+        "/work-orders",
+        json={
+            "asset_id": asset["id"],
+            "title": "Clear nullable description",
+            "description": "This description should be cleared.",
+            "due_date": "2026-08-18T08:00:00Z",
+        },
+    )
+    work_order_id = create_response.json()["id"]
+
+    response = client.patch(
+        f"/work-orders/{work_order_id}",
+        json={"description": None},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["description"] is None
+
+    get_response = client.get(f"/work-orders/{work_order_id}")
+    assert get_response.status_code == 200
+    assert get_response.json()["description"] is None
+
+
 def test_update_unknown_work_order() -> None:
     unknown_id = "00000000-0000-0000-0000-000000000000"
 
