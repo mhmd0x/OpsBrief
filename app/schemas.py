@@ -16,8 +16,8 @@ class AssetCreate(BaseModel):
 
 
 class AssetUpdate(BaseModel):
-    name: str | None = Field(default=None, min_length=1, max_length=100)
-    asset_tag: str | None = Field(default=None, min_length=1, max_length=50)
+    name: str = Field(default=None, min_length=1, max_length=100)
+    asset_tag: str = Field(default=None, min_length=1, max_length=50)
     location: str | None = Field(default=None, max_length=100)
     
 
@@ -76,12 +76,12 @@ class WorkOrderCreate(BaseModel):
         return value
 
 class WorkOrderUpdate(BaseModel):
-    title: str | None = Field(default=None, min_length=1, max_length=200)
+    title: str = Field(default=None, min_length=1, max_length=200)
     description: str | None = Field(default=None, max_length=1000)
-    priority: WorkOrderPriority | None = None
-    maintenance_type: MaintenanceType | None = None
-    status: WorkOrderStatus | None = None
-    due_date: datetime | None = None
+    priority: WorkOrderPriority = None
+    maintenance_type: MaintenanceType = None
+    status: WorkOrderStatus = None
+    due_date: datetime = None
     failure_code: str | None = Field(
         default=None,
         min_length=1,

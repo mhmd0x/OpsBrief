@@ -134,6 +134,29 @@ Create the local environment file:
 cp .env.example .env
 ```
 
+The example file contains development-only database credentials. Before using
+OpsBrief in a shared or production environment, replace `POSTGRES_PASSWORD`
+with a unique secret and replace `OPSBRIEF_API_KEY` with a generated private
+key. Docker Compose requires `POSTGRES_PASSWORD` to be supplied explicitly;
+there is no built-in password fallback. Because Compose embeds the password in
+`DATABASE_URL`, use a URL-safe password containing only letters, numbers,
+`-`, `_`, `.`, or `~`. Generate one with:
+
+```bash
+python -c "import secrets; print(secrets.token_urlsafe(32))"
+```
+
+`APP_ENV` selects the runtime environment:
+
+- `local`: uses `DATABASE_URL` when provided, otherwise falls back to the local SQLite database.
+- `test`: uses `DATABASE_URL` when provided, otherwise permits the SQLite fallback used by tests.
+- `production`: requires `DATABASE_URL` and rejects SQLite URLs during startup.
+
+Production deployments must set both `APP_ENV=production` and a non-SQLite
+`DATABASE_URL`. The application fails before serving requests if either
+production database requirement is invalid. Error messages do not include the
+database URL or credentials.
+
 Build and start the API and PostgreSQL:
 
 ```bash
@@ -211,17 +234,10 @@ On Windows PowerShell, use:
 Copy-Item .env.example .env
 ```
 
-Start PostgreSQL:
-
-```bash
-docker compose up -d database
-```
-
-Confirm the database is healthy:
-
-```bash
-docker compose ps
-```
+For host-based development, make PostgreSQL available at `localhost:5432`.
+The PostgreSQL service in Docker Compose is intentionally internal-only; use
+the full-stack Docker instructions above when you want the API and database to
+run entirely in containers.
 
 Apply the database migrations:
 
@@ -267,13 +283,16 @@ The tests use a separate in-memory SQLite database and do not modify development
 
 ## Stopping the Development Database
 
-Stop the PostgreSQL container:
+For the containerized development environment, stop the PostgreSQL container:
 
 ```bash
 docker compose down
 ```
 
 Avoid using `docker compose down -v` unless you intentionally want to delete the local PostgreSQL data.
+
+For host-based development, stop PostgreSQL using the service manager for the
+PostgreSQL installation you provided at `localhost:5432`.
 
 ## Project Structure
 
