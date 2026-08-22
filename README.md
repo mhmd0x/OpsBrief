@@ -139,6 +139,17 @@ there is no built-in password fallback. Because Compose embeds the password in
 python -c "import secrets; print(secrets.token_urlsafe(32))"
 ```
 
+`APP_ENV` selects the runtime environment:
+
+- `local`: uses `DATABASE_URL` when provided, otherwise falls back to the local SQLite database.
+- `test`: uses `DATABASE_URL` when provided, otherwise permits the SQLite fallback used by tests.
+- `production`: requires `DATABASE_URL` and rejects SQLite URLs during startup.
+
+Production deployments must set both `APP_ENV=production` and a non-SQLite
+`DATABASE_URL`. The application fails before serving requests if either
+production database requirement is invalid. Error messages do not include the
+database URL or credentials.
+
 Build and start the API and PostgreSQL:
 
 ```bash

@@ -19,6 +19,7 @@ services:
     build:
       context: .
     environment:
+      APP_ENV: ${APP_ENV:?APP_ENV must be set to local, test, or production}
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-opsbrief}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}@database:5432/${POSTGRES_DB:-opsbrief}
       APP_TIMEZONE: ${APP_TIMEZONE:-Asia/Riyadh}
       OPSBRIEF_API_KEY: "${OPSBRIEF_API_KEY:?OPSBRIEF_API_KEY must be set}"
