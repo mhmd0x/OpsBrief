@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from uuid import UUID
 from enum import StrEnum
 from pydantic import (
@@ -6,6 +6,7 @@ from pydantic import (
     ConfigDict,
     Field,
     field_validator,
+    model_validator,
 )
 
 
@@ -42,6 +43,33 @@ class WorkOrderStatus(StrEnum):
     CANCELLED = "cancelled"
 
 
+def validate_lifecycle_timestamps(
+    values: dict[str, datetime | None],
+) -> None:
+    timestamps = [
+        values.get("failure_reported_at"),
+        values.get("repair_started_at"),
+        values.get("restored_at"),
+    ]
+    comparable_timestamps = [
+        timestamp.astimezone(UTC).replace(tzinfo=None)
+        if timestamp is not None and timestamp.tzinfo is not None
+        else timestamp
+        for timestamp in timestamps
+        if timestamp is not None
+    ]
+
+    for earlier, later in zip(
+        comparable_timestamps,
+        comparable_timestamps[1:],
+    ):
+        if earlier is not None and later is not None and earlier > later:
+            raise ValueError(
+                "lifecycle timestamps must be ordered as "
+                "failure_reported_at <= repair_started_at <= restored_at"
+            )
+
+
 class MaintenanceType(StrEnum):
     PREVENTIVE = "preventive"
     CORRECTIVE = "corrective"
@@ -61,7 +89,15 @@ class WorkOrderCreate(BaseModel):
         min_length=1,
         max_length=50,
 )
-    
+    failure_reported_at: datetime | None = None
+    repair_started_at: datetime | None = None
+    restored_at: datetime | None = None
+
+    @model_validator(mode="after")
+    def lifecycle_timestamps_must_be_ordered(self):
+        validate_lifecycle_timestamps(self.model_dump())
+        return self
+
     @field_validator("due_date")
     @classmethod
     def due_date_must_include_timezone(
@@ -87,6 +123,9 @@ class WorkOrderUpdate(BaseModel):
         min_length=1,
         max_length=50,
 )
+    failure_reported_at: datetime | None = None
+    repair_started_at: datetime | None = None
+    restored_at: datetime | None = None
 
     @field_validator("due_date")
     @classmethod
@@ -122,6 +161,9 @@ class WorkOrder(BaseModel):
     created_at: datetime
     updated_at: datetime
     failure_code: str | None
+    failure_reported_at: datetime | None
+    repair_started_at: datetime | None
+    restored_at: datetime | None
 
 
 class RecurringIssueSignal(BaseModel):
