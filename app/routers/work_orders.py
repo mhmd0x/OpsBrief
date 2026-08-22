@@ -20,6 +20,7 @@ from app.schemas import (
     WorkOrderPriority,
     WorkOrderStatus,
     WorkOrderUpdate,
+    validate_lifecycle_timestamps,
 )
 from app.security import require_api_key
 
@@ -259,6 +260,22 @@ def update_work_order(
         update_fields["due_date"] = update_fields[
             "due_date"
         ].astimezone(UTC)
+
+    lifecycle_values = {
+        field: update_fields.get(field, getattr(work_order, field))
+        for field in (
+            "failure_reported_at",
+            "repair_started_at",
+            "restored_at",
+        )
+    }
+    try:
+        validate_lifecycle_timestamps(lifecycle_values)
+    except ValueError as error:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(error),
+        ) from error
 
     new_status = update_fields.get("status")
 

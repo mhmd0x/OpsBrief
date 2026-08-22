@@ -77,6 +77,18 @@ class WorkOrderModel(Base):
         DateTime(timezone=True),
         nullable=True,
     )
+    failure_reported_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+    repair_started_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+    restored_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
     due_date: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
